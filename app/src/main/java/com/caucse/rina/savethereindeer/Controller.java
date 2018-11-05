@@ -5,13 +5,14 @@ import java.util.ArrayList;
 public class Controller {
     private Stage stage;
 
-    Controller(){
+    Controller(Stage stage){
 
+        this.stage = stage;
         //todo : copy the stage -> setting in the the stage variable
 
     }
 
-    private void initPosition(){
+    private void initWolfPosition(){
         //todo
     }
 
@@ -28,17 +29,27 @@ public class Controller {
 
     }
 
-    public void moveDeer(Position position){}
+    public void moveDeer(Reindeer reindeer, Position position){
+        reindeer.move(position);
+    }
 
     public void checkTile(Position position){}
 
-    public void disguiseReindeer(){}
+    public void disguiseReindeer(Reindeer reindeer, boolean flag){
+        reindeer.setDisguise(flag);
+    }
 
-    public void movewolf(ArrayList<Position> trace){}
+    public void movewolf(Wolf wolf, ArrayList<Position> trace){
+        for(int i = 0; i<stage.getSpeedOfWolf(); i++){
+            wolf.move(trace.get(i));
+        }
+    }
 
     public void stateUpdate(){}
 
-    public void deSpeedOfWolf(){}
+    public void deSpeedOfWolf(){
+        stage.decreaseSpeedOfWolf();
+    }
 
 
 
@@ -46,7 +57,6 @@ public class Controller {
         Position wolfpos;
         Position reindeerpos;
         int distance;
-
     }
 
 }

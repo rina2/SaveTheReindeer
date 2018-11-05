@@ -4,8 +4,11 @@ public class Position {
     int pointX;
     int pointY;
 
-    public void findGridPosition(){
-
+    Position(int x, int y){
+        pointX = x;
+        pointY = y;
+    }
+    public void getGridPosition(){
 
     }
 

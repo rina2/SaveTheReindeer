@@ -5,4 +5,11 @@ public class Tree extends Model {
     void draw() {
 
     }
+
+    Tree(Position p){
+        position = p;
+    }
+    Tree(int x, int y){
+        position = new Position(x, y);
+    }
 }

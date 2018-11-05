@@ -11,12 +11,14 @@ public class View {
     GridView grid;
     GridAdapter gridAdapter;
 
-    View(){} //constructor
+    View(ArrayList<Model> m){
+        this.model = m;
+        copymodel = new ArrayList<Model>();
+    } //constructor
     public void setOnMap(GridView grid){}
     public void showNearlistDeer(Position pos){}
     public void updateMap(){}
     public void openTile(Position pos, boolean isWolf, boolean istrace){}
-
 
 
 }
