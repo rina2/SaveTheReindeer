@@ -25,6 +25,12 @@ public class Wolf extends Model {
         super.move(p);
     }
 
+    public boolean ismatchWithTrace(Position p){
+        for(int idx =0; idx<trace.size(); idx++){
+            if(p.isSamePosition(trace.get(idx))) return true;
+        }
+        return false;
+    }
     //position 0 is the oldest one
     private void addTrace(Position p){
         if(trace.size() >=NUM_TRACE){

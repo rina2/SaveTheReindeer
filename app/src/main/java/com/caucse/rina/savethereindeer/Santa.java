@@ -2,7 +2,7 @@ package com.caucse.rina.savethereindeer;
 
 public class Santa extends Model {
 
-    private int remainDeer=0;
+    private int capacity=0;
     @Override
     void draw() {
 
@@ -10,10 +10,18 @@ public class Santa extends Model {
 
     Santa(Position p, int num){
         position  = p;
-        remainDeer = num;
+        capacity = num;
     }
     Santa(int posx, int posy, int num){
         position = new Position(posx, posy);
-        remainDeer = num;
+        capacity = num;
+    }
+
+    public void decreaseCapacity(){
+        capacity--;
+    }
+
+    public int getCapacity() {
+        return capacity;
     }
 }

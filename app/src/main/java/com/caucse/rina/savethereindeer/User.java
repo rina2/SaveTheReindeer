@@ -1,7 +1,7 @@
 package com.caucse.rina.savethereindeer;
 
 public class User {
-    public final User INSTANCE = new User();
+    public static final User INSTANCE = new User();
 
     private int clearStage;
     private int itemDisguise;

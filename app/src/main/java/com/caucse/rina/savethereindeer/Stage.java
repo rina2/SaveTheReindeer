@@ -3,6 +3,8 @@ package com.caucse.rina.savethereindeer;
 import java.util.ArrayList;
 
 public class Stage {
+
+    private int totalTurnNum = 0;
     private int numOfReindeer = 0;
     private int numOfWolf = 0;
     private int numOfSanta= 0;
@@ -10,9 +12,11 @@ public class Stage {
     private int sizeOfMap= 0;
     private int stageNumber= 0;
     private int speedOfWolf = 0;
+
     private ArrayList<Model> model;
 
-    public Stage(ArrayList<Model> list, int numOfWolf ,int speedOfWolf ,int size, int stageNumber){
+    public Stage(ArrayList<Model> list, int numOfWolf ,int speedOfWolf ,int size, int stageNumber, int totalTurnNum){
+        this.totalTurnNum = totalTurnNum;
         this.numOfWolf = numOfWolf;
         model = list;
         this.sizeOfMap = size;
@@ -24,6 +28,19 @@ public class Stage {
             else if(list.get(i) instanceof Reindeer) numOfReindeer++;
             else if(list.get(i) instanceof Tree) numOfTree ++;
         }
+    }
+
+
+    public int getTotalTurnNum() {
+        return totalTurnNum;
+    }
+
+    public ArrayList<Model> getModel() {
+        return model;
+    }
+
+    public int getSizeOfMap() {
+        return sizeOfMap;
     }
 
     public int getNumOfReindeer() {

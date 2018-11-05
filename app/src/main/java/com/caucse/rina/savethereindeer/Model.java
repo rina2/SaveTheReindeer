@@ -7,16 +7,10 @@ abstract class Model {
         position = p;
     }
 
-    public boolean isSamePosition(Model model){
-        if(position.pointX == model.getPosition().pointX && position.pointY == model.getPosition().pointY)
-            return true;
-        return false;
-    }
 
     public Position getPosition(){
         return position;
     }
-
 
     abstract void draw();
     void move(Position p){
