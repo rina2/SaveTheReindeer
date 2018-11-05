@@ -59,6 +59,7 @@ public class Controller {
         for (int idx = 0; idx < wolf.size(); idx++) {
             Model curWolf = wolf.get(idx);
 
+
             int[][] distanceMap = setDistanceOnMap(stage.getSizeOfMap(), map, curWolf.getPosition().getX(), curWolf.getPosition().getY());
 
             for (int deerIdx = 0; deerIdx < reindeer.size(); deerIdx++) {
@@ -81,6 +82,9 @@ public class Controller {
 
     private int[][] setDistanceOnMap(int size, int[][] mymap, int posX, int posY) {
         ArrayList<Position> openList = new ArrayList<>();
+        ArrayList<ChainPath> trace = new ArrayList<>();
+        trace.add(new ChainPath(new Position(posX, posY),null));
+
         int[][] map = new int[size][size];
         boolean[][] closeList = new boolean[size][size];
         for (int i = 0; i < size; i++) {
@@ -102,19 +106,27 @@ public class Controller {
 
             if (x > 0 && !closeList[x - 1][y] && map[x - 1][y] > map[x][y] + 1) {
                 map[x - 1][y] = map[x][y] + 1;
-                openList.add(new Position(x - 1, y));
+                Position pos = new Position(x - 1, y);
+                openList.add(pos);
+                trace.add(new ChainPath(new Position(x,y),pos));
             }
             if (x < size - 1 && !closeList[x + 1][y] && map[x + 1][y] > map[x][y] + 1) {
                 map[x + 1][y] = map[x][y] + 1;
-                openList.add(new Position(x + 1, y));
+                Position pos = new Position(x + 1, y);
+                openList.add(pos);
+                trace.add(new ChainPath(new Position(x,y),pos));
             }
             if (y > 0 && !closeList[x][y - 1] && map[x][y - 1] > map[x][y - 1]) {
                 map[x][y - 1] = map[x][y] + 1;
-                openList.add(new Position(x, y - 1));
+                Position pos = new Position(x , y-1);
+                openList.add(pos);
+                trace.add(new ChainPath(new Position(x,y),pos));
             }
             if (y < size - 1 && !closeList[x][y + 1] && map[x][y + 1] > map[x][y] + 1) {
                 map[x][y + 1] = map[x][y] + 1;
-                openList.add(new Position(x, y + 1));
+                Position pos = new Position(x , y+1);
+                openList.add(pos);
+                trace.add(new ChainPath(new Position(x,y),pos));
             }
             openList.remove(0);
             closeList[x][y] = true;
@@ -315,6 +327,16 @@ public class Controller {
             return reindeer;
         }
 
+    }
+
+    class ChainPath{
+        Position parent;
+        Position position;
+
+        ChainPath(Position parent, Position position){
+            this.parent = parent;
+            this.position = position;
+        }
     }
 
 }
