@@ -26,7 +26,7 @@ public class View {
 
 
     public void showNearlistDeer(Reindeer deer){
-        Log.d("WARNING DEER","("+deer.getPosition().getX()+", "+deer.getPosition().getY()+") is nearest!");
+        deer.draw();
     }
 
 

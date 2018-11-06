@@ -1,5 +1,7 @@
 package com.caucse.rina.savethereindeer;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 public class Wolf extends Model {
@@ -16,6 +18,11 @@ public class Wolf extends Model {
     }
     @Override
     void draw() {
+        if(isCaptured){
+            Log.d("WOLF_POSITION","("+position.getX()+", "+position.getY()+") : CAPTURED WOLF");
+        }else{
+            Log.d("WOLF_POSITION","("+position.getX()+", "+position.getY()+")");
+        }
 
     }
 
@@ -25,7 +32,7 @@ public class Wolf extends Model {
         super.move(p);
     }
 
-    public boolean ismatchWithTrace(Position p){
+    public boolean isMatchWithTrace(Position p){
         for(int idx =0; idx<trace.size(); idx++){
             if(p.isSamePosition(trace.get(idx))) return true;
         }

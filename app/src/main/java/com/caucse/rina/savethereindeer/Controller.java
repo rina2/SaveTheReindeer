@@ -4,7 +4,6 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class Controller {
@@ -38,8 +37,12 @@ public class Controller {
         //view.showNearlistDeer(distance.getReindeer());
     }
 
-    //todo
-    private void findNearestDeer() {
+    public void showNearestDeer(){
+        Distance distance = findNearestDeer();
+        view.showNearlistDeer(distance.getReindeer());
+    }
+
+    private Distance findNearestDeer() {
 
         int[][] map = new int[stage.getSizeOfMap()][stage.getSizeOfMap()];
         ArrayList<Reindeer> reindeer = new ArrayList<>();
@@ -59,12 +62,12 @@ public class Controller {
         for (int idx = 0; idx < wolf.size(); idx++) {
             Model curWolf = wolf.get(idx);
 
-
-            int[][] distanceMap = setDistanceOnMap(stage.getSizeOfMap(), map, curWolf.getPosition().getX(), curWolf.getPosition().getY());
+            ArrayList<ChainPath> path;
+            path = setDistanceOnMap(stage.getSizeOfMap(), map, curWolf.getPosition().getX(), curWolf.getPosition().getY());
 
             for (int deerIdx = 0; deerIdx < reindeer.size(); deerIdx++) {
                 Model deer = reindeer.get(deerIdx);
-                int curDistance = distanceMap[deer.getPosition().getX()][deer.getPosition().getY()];
+                int curDistance = map[deer.getPosition().getX()][deer.getPosition().getY()];
                 if (curDistance < shortest) {
                     distance.setInfo((Wolf) curWolf, (Reindeer) deer, curDistance);
                 } else if (curDistance == shortest) {
@@ -75,26 +78,27 @@ public class Controller {
                 }
             }
         }
-
-        view.showNearlistDeer(distance.getReindeer());
+        return distance;
     }
 
 
-    private int[][] setDistanceOnMap(int size, int[][] mymap, int posX, int posY) {
+    //todo : add trace
+    private ArrayList<ChainPath> setDistanceOnMap(int size, int[][] map, int posX, int posY) {
         ArrayList<Position> openList = new ArrayList<>();
-        ArrayList<ChainPath> trace = new ArrayList<>();
-        trace.add(new ChainPath(new Position(posX, posY),null));
-
-        int[][] map = new int[size][size];
+        ArrayList<ChainPath> chainPaths = new ArrayList<>();
         boolean[][] closeList = new boolean[size][size];
+        chainPaths.add(new ChainPath(new Position(posX, posY), null));
+
+        map = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (mymap[i][j] == -1) {
-                    closeList[i][j] = true;
-                    map[i][j] = -1;
-                } else if (mymap[i][j] == 0) map[i][j] = 100;
-                else map[i][j] = mymap[i][j];
+                map[i][j] = 100;
             }
+        }
+        for (int i = 0; i < stage.getModel().size(); i++) {
+            Model model = stage.getModel().get(i);
+            if (model instanceof Tree || model instanceof Santa)
+                map[model.getPosition().getX()][model.getPosition().getY()] = -1;
         }
         openList.add(new Position(posX, posY));
         map[posX][posY] = 0;
@@ -108,36 +112,37 @@ public class Controller {
                 map[x - 1][y] = map[x][y] + 1;
                 Position pos = new Position(x - 1, y);
                 openList.add(pos);
-                trace.add(new ChainPath(new Position(x,y),pos));
+                chainPaths.add(new ChainPath(new Position(x, y), pos));
             }
             if (x < size - 1 && !closeList[x + 1][y] && map[x + 1][y] > map[x][y] + 1) {
                 map[x + 1][y] = map[x][y] + 1;
                 Position pos = new Position(x + 1, y);
                 openList.add(pos);
-                trace.add(new ChainPath(new Position(x,y),pos));
+                chainPaths.add(new ChainPath(new Position(x, y), pos));
             }
             if (y > 0 && !closeList[x][y - 1] && map[x][y - 1] > map[x][y - 1]) {
                 map[x][y - 1] = map[x][y] + 1;
-                Position pos = new Position(x , y-1);
+                Position pos = new Position(x, y - 1);
                 openList.add(pos);
-                trace.add(new ChainPath(new Position(x,y),pos));
+                chainPaths.add(new ChainPath(new Position(x, y), pos));
             }
             if (y < size - 1 && !closeList[x][y + 1] && map[x][y + 1] > map[x][y] + 1) {
                 map[x][y + 1] = map[x][y] + 1;
-                Position pos = new Position(x , y+1);
+                Position pos = new Position(x, y + 1);
                 openList.add(pos);
-                trace.add(new ChainPath(new Position(x,y),pos));
+                chainPaths.add(new ChainPath(new Position(x, y), pos));
             }
             openList.remove(0);
             closeList[x][y] = true;
 
         }
 
-        return map;
+        return chainPaths;
     }
 
+
     //todo
-    ArrayList<Position> findShortestPath(Distance distance) {
+    ArrayList<Position> findShortestPath(ArrayList<ChainPath> chainPaths ,Distance distance) {
         ArrayList<Position> position = new ArrayList<Position>();
 
         return position;
@@ -151,12 +156,13 @@ public class Controller {
         for (int i = 0; i < stage.getModel().size(); i++) {
             Model curModel = stage.getModel().get(i);
 
-            if (!(curModel instanceof Wolf) && curModel.position.isSamePosition(toPos))
+            if (!(curModel instanceof Wolf) && !(curModel instanceof Santa) && curModel.position.isSamePosition(toPos))
                 return false;
             if (curModel.position.isSamePosition(fromPos) && curModel instanceof Reindeer) {
                 curModel.move(toPos);
-                view.updateMap();
                 remainTurn--;
+                moveWolf();
+                view.updateMap();
                 return true;
             }
         }
@@ -175,7 +181,7 @@ public class Controller {
                     view.checkTile(position, IS_CAPTURED);
                     isGameWin = true;
                     return true;
-                } else if (((Wolf) model).ismatchWithTrace(position)) {
+                } else if (((Wolf) model).isMatchWithTrace(position)) {
                     is_trace = true;
                 }
             } else if (model.getPosition().isSamePosition(position)) {
@@ -189,7 +195,7 @@ public class Controller {
         }
 
         if (!isItemSearchUsed) {
-            movewolf();
+            moveWolf();
             remainTurn--;
         } else {
             isItemSearchUsed = false;
@@ -210,9 +216,17 @@ public class Controller {
         }
     }
 
-    //todo : move wolf, check status of reindeer
-    private void movewolf() {
+    //todo : move wolf
+    private void moveWolf() {
+        Distance distance = findNearestDeer();
+        ArrayList<Position> shortestPath = new ArrayList<>();
 
+        //find trace
+
+        Wolf wolf = distance.getWolf();
+        for(int i = shortestPath.size()-1; i>shortestPath.size() - stage.getSpeedOfWolf()-1 ; i--){
+            wolf.move(shortestPath.get(i));
+        }
     }
 
     //todo
