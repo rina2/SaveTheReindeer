@@ -32,15 +32,15 @@ public class Controller {
         isItemSearchUsed = false;
         view = new View(stage.getModel());
         this.stage = stage;
-        initWolfPosition(); //set the position of wolf
-        findNearestDeer();
-        //view.showNearlistDeer(distance.getReindeer());
     }
 
-    public void showNearestDeer(){
+
+    public void initMap() {
+        initWolfPosition(); //set the position of wolf
         Distance distance = findNearestDeer();
         view.showNearlistDeer(distance.getReindeer());
     }
+
 
     private Distance findNearestDeer() {
 
@@ -81,8 +81,7 @@ public class Controller {
         return distance;
     }
 
-
-    //todo : add trace
+    //return chainpath, which store the parent position of each position.
     private ArrayList<ChainPath> setDistanceOnMap(int size, int[][] map, int posX, int posY) {
         ArrayList<Position> openList = new ArrayList<>();
         ArrayList<ChainPath> chainPaths = new ArrayList<>();
@@ -141,12 +140,32 @@ public class Controller {
     }
 
 
-    //todo
-    ArrayList<Position> findShortestPath(ArrayList<ChainPath> chainPaths ,Distance distance) {
-        ArrayList<Position> position = new ArrayList<Position>();
+    //path(0) is deer, path(last) is wolf
+    ArrayList<Position> findShortestPath(ArrayList<ChainPath> chainPaths, Distance distance) {
+        ArrayList<Position> shortestPath = new ArrayList<Position>();
 
-        return position;
+        Position pos = distance.getReindeer().getPosition();
+        for (int idx = 0; idx < chainPaths.size(); idx++) {
+            if (chainPaths.get(idx).isMatchWithPosition(pos)) {
+                shortestPath.add(pos);
+                pos = chainPaths.get(idx).getParent();
+                break;
+            }
+        }
+        while (true) {
+            pos = findParentPosition(chainPaths, pos);
+            if (pos == null) break;
+            shortestPath.add(pos);
+        }
+        return shortestPath;
 
+    }
+
+    private Position findParentPosition(ArrayList<ChainPath> chainPaths, Position p) {
+        for (int i = 0; i < chainPaths.size(); i++) {
+            if (chainPaths.get(i).isMatchWithPosition(p)) return chainPaths.get(i).getParent();
+        }
+        return null;
     }
 
 
@@ -162,7 +181,6 @@ public class Controller {
                 curModel.move(toPos);
                 remainTurn--;
                 moveWolf();
-                view.updateMap();
                 return true;
             }
         }
@@ -211,26 +229,26 @@ public class Controller {
             if (model instanceof Reindeer && model.getPosition().isSamePosition(position)) {
                 ((Reindeer) model).setDisguise(true);
                 user.decreaseItemDisguise();
-                view.updateMap();
             }
         }
     }
 
-    //todo : move wolf
     private void moveWolf() {
         Distance distance = findNearestDeer();
-        ArrayList<Position> shortestPath = new ArrayList<>();
-
-        //find trace
-
         Wolf wolf = distance.getWolf();
-        for(int i = shortestPath.size()-1; i>shortestPath.size() - stage.getSpeedOfWolf()-1 ; i--){
-            wolf.move(shortestPath.get(i));
+
+        int[][] map = new int[stage.getSizeOfMap()][stage.getSizeOfMap()];
+        ArrayList<ChainPath> chainPaths = setDistanceOnMap(stage.getSizeOfMap(), map,
+                distance.getWolf().getPosition().getX(), distance.getWolf().getPosition().getY());
+        ArrayList<Position> shortestPath = findShortestPath(chainPaths, distance);
+
+        for(int i = 0;i<stage.getSpeedOfWolf(); i++){
+            distance.getWolf().move(shortestPath.get(shortestPath.size()-2-i));
         }
     }
 
     //todo
-    //check if Game is over/win.
+    //check if Game is over/win, and draw in the grid
     public int stateUpdate() {
         int numOfDeer = 0;
 
@@ -273,19 +291,21 @@ public class Controller {
         return 0;
     }
 
-    //todo
-    public void useItemSlow() {
+    //if success, return true else return false
+    public boolean useItemSlow() {
+        if(stage.getSpeedOfWolf() > 1) return false;
+
         user.decreaseItemSlow();
         stage.decreaseSpeedOfWolf();
+        return true;
     }
 
-    //todo
     public void useItemSearch(Position p) {
         user.decreaseItemSearch();
+        isItemSearchUsed = true;
         checkTile(p);
     }
-
-    //todo
+    
     private void initWolfPosition() {
 
         int[][] map = new int[stage.getSizeOfMap()][stage.getSizeOfMap()];
@@ -319,7 +339,6 @@ public class Controller {
             }
         }
         Log.d("WOLF_SETTING", "POSITION COMPLETE");
-        //todo
     }
 
     class Distance {
@@ -343,14 +362,24 @@ public class Controller {
 
     }
 
-    class ChainPath{
+    class ChainPath {
         Position parent;
         Position position;
 
-        ChainPath(Position parent, Position position){
+        ChainPath(Position parent, Position position) {
             this.parent = parent;
             this.position = position;
         }
+
+        public boolean isMatchWithPosition(Position p) {
+            if (this.position.getX() == p.getX() && this.position.getY() == p.getY()) return true;
+            return false;
+        }
+
+        public Position getParent() {
+            return parent;
+        }
+
     }
 
 }
