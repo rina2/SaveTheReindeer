@@ -9,9 +9,9 @@ import java.util.Random;
 public class Controller {
 
     //when open the tile, represent the status of tile.
-    final static int GAME_OVER = 100;
-    final static int GAME_WIN = 101;
-    final static int NONE = 0;
+    private final static int GAME_OVER = 100;
+    private final static int GAME_WIN = 101;
+    private final static int NONE = 0;
     final static int IS_CAPTURED = 1;
     final static int IS_TRACE = 2;
 
@@ -34,6 +34,7 @@ public class Controller {
         this.stage = stage;
     }
 
+    /********************Start Game *****************************/
 
     public void initMap() {
         initWolfPosition(); //set the position of wolf
@@ -62,8 +63,7 @@ public class Controller {
         for (int idx = 0; idx < wolf.size(); idx++) {
             Model curWolf = wolf.get(idx);
 
-            ArrayList<ChainPath> path;
-            path = setDistanceOnMap(stage.getSizeOfMap(), map, curWolf.getPosition().getX(), curWolf.getPosition().getY());
+            setDistanceOnMap(stage.getSizeOfMap(), map, curWolf.getPosition().getX(), curWolf.getPosition().getY());
 
             for (int deerIdx = 0; deerIdx < reindeer.size(); deerIdx++) {
                 Model deer = reindeer.get(deerIdx);
@@ -81,7 +81,7 @@ public class Controller {
         return distance;
     }
 
-    //return chainpath, which store the parent position of each position.
+    //return chainPath, which store the parent position of each position.
     private ArrayList<ChainPath> setDistanceOnMap(int size, int[][] map, int posX, int posY) {
         ArrayList<Position> openList = new ArrayList<>();
         ArrayList<ChainPath> chainPaths = new ArrayList<>();
@@ -169,23 +169,7 @@ public class Controller {
     }
 
 
-    //if return value is false, user input wrong movement position.
-    public boolean moveDeer(Position fromPos, Position toPos) {
-
-        for (int i = 0; i < stage.getModel().size(); i++) {
-            Model curModel = stage.getModel().get(i);
-
-            if (!(curModel instanceof Wolf) && !(curModel instanceof Santa) && curModel.position.isSamePosition(toPos))
-                return false;
-            if (curModel.position.isSamePosition(fromPos) && curModel instanceof Reindeer) {
-                curModel.move(toPos);
-                remainTurn--;
-                moveWolf();
-                return true;
-            }
-        }
-        return false;
-    }
+    /**********************************User Action ************************************/
 
     // save the status and show
     public boolean checkTile(Position position) {
@@ -221,6 +205,27 @@ public class Controller {
         return true;
     }
 
+
+    //if return value is false, user input wrong movement position.
+    public boolean moveDeer(Position fromPos, Position toPos) {
+
+        for (int i = 0; i < stage.getModel().size(); i++) {
+            Model curModel = stage.getModel().get(i);
+
+            if (!(curModel instanceof Wolf) && !(curModel instanceof Santa) && curModel.position.isSamePosition(toPos))
+                return false;
+            if (curModel.position.isSamePosition(fromPos) && curModel instanceof Reindeer) {
+                curModel.move(toPos);
+                remainTurn--;
+                moveWolf();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /***********************************Item use **************************************/
+
     //change status of reindeer and update view
     public void useItemDisguise(Position position) {
         for (int idx = 0; idx < stage.getModel().size(); idx++) {
@@ -233,19 +238,23 @@ public class Controller {
         }
     }
 
-    private void moveWolf() {
-        Distance distance = findNearestDeer();
-        Wolf wolf = distance.getWolf();
+    //if success, return true else return false
+    public boolean useItemSlow() {
+        if(stage.getSpeedOfWolf() > 1) return false;
 
-        int[][] map = new int[stage.getSizeOfMap()][stage.getSizeOfMap()];
-        ArrayList<ChainPath> chainPaths = setDistanceOnMap(stage.getSizeOfMap(), map,
-                distance.getWolf().getPosition().getX(), distance.getWolf().getPosition().getY());
-        ArrayList<Position> shortestPath = findShortestPath(chainPaths, distance);
-
-        for(int i = 0;i<stage.getSpeedOfWolf(); i++){
-            distance.getWolf().move(shortestPath.get(shortestPath.size()-2-i));
-        }
+        user.decreaseItemSlow();
+        stage.decreaseSpeedOfWolf();
+        return true;
     }
+
+
+    public void useItemSearch(Position p) {
+        user.decreaseItemSearch();
+        isItemSearchUsed = true;
+        checkTile(p);
+    }
+
+
 
     //todo
     //check if Game is over/win, and draw in the grid
@@ -291,21 +300,8 @@ public class Controller {
         return 0;
     }
 
-    //if success, return true else return false
-    public boolean useItemSlow() {
-        if(stage.getSpeedOfWolf() > 1) return false;
 
-        user.decreaseItemSlow();
-        stage.decreaseSpeedOfWolf();
-        return true;
-    }
 
-    public void useItemSearch(Position p) {
-        user.decreaseItemSearch();
-        isItemSearchUsed = true;
-        checkTile(p);
-    }
-    
     private void initWolfPosition() {
 
         int[][] map = new int[stage.getSizeOfMap()][stage.getSizeOfMap()];
@@ -341,6 +337,24 @@ public class Controller {
         Log.d("WOLF_SETTING", "POSITION COMPLETE");
     }
 
+    private void moveWolf() {
+        Distance distance = findNearestDeer();
+        Wolf wolf = distance.getWolf();
+
+        int[][] map = new int[stage.getSizeOfMap()][stage.getSizeOfMap()];
+        ArrayList<ChainPath> chainPaths = setDistanceOnMap(stage.getSizeOfMap(), map,
+                distance.getWolf().getPosition().getX(), distance.getWolf().getPosition().getY());
+        ArrayList<Position> shortestPath = findShortestPath(chainPaths, distance);
+
+        for(int i = 0;i<stage.getSpeedOfWolf(); i++){
+            distance.getWolf().move(shortestPath.get(shortestPath.size()-2-i));
+        }
+    }
+
+
+    
+    /******************************Inner Class *****************************/
+
     class Distance {
         private Wolf wolf;
         private Reindeer reindeer;
@@ -372,8 +386,7 @@ public class Controller {
         }
 
         public boolean isMatchWithPosition(Position p) {
-            if (this.position.getX() == p.getX() && this.position.getY() == p.getY()) return true;
-            return false;
+            return (this.position.getX() == p.getX() && this.position.getY() == p.getY());
         }
 
         public Position getParent() {
