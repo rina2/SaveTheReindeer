@@ -9,41 +9,84 @@ public class User {
     private int itemSlow;
     private int money;
 
-    private User(){
-        clearStage = 0;
-        itemDisguise = 0;
-        itemSearch  = 0;
-        itemSlow = 0;
-        money = 0;
+    private User() {
     }
 
-    public void increaseStageClear(){
+    public void initUserInfo(int clearStage, int itemDisguise, int itemSearch, int itemSlow, int money) {
+        this.clearStage = clearStage;
+        this.itemDisguise = itemDisguise;
+        this.itemSearch = itemSearch;
+        this.itemSlow = itemSlow;
+        this.money = money;
+    }
+
+
+    /************************** Getter ***********************/
+    public int getItemSlow() {
+        return itemSlow;
+    }
+
+    public int getItemSearch() {
+        return itemSearch;
+    }
+
+    public int getItemDisguise() {
+        return itemDisguise;
+    }
+
+    public int getClearStage() {
+        return clearStage;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+
+    /************************** Change User Information **************/
+
+    public void increaseStageClear() {
         this.clearStage++;
+        updateDB();
     }
 
-    public void increaseItemDisguise(){
+    public void increaseItemDisguise() {
         this.itemDisguise++;
+        updateDB();
     }
 
-    public void decreaseItemDisguise(){
+
+    public void decreaseItemDisguise() {
         this.itemDisguise--;
+        updateDB();
     }
-    public void increaseItemSlow(){
+
+    public void increaseItemSlow() {
         itemSlow++;
     }
-    public void decreaseItemSlow(){
+
+    public void decreaseItemSlow() {
         itemSlow--;
     }
-    public void increaseItemSearch(){
-        itemSearch ++;
+
+    public void increaseItemSearch() {
+        itemSearch++;
     }
-    public void decreaseItemSearch(){
+
+    public void decreaseItemSearch() {
         itemSearch--;
     }
-    public void earnMoney(int plus){
+
+    public void earnMoney(int plus) {
         this.money += plus;
     }
-    public void spendMoney(int minus){
+
+    public void spendMoney(int minus) {
         this.money -= minus;
+    }
+
+    private void updateDB(){
+        DBController con = new DBController();
+        con.updateUserInformation();
     }
 }

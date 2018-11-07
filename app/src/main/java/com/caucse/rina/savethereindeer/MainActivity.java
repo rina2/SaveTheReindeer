@@ -1,5 +1,6 @@
 package com.caucse.rina.savethereindeer;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,18 +8,37 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+
 public class MainActivity extends AppCompatActivity {
 
     ArrayList<Model> model;
     Stage stage;
     Controller controller;
-
+    public SharedPreferences prefs;
+    DBController dbController;
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        prefs = getSharedPreferences("Pref",MODE_PRIVATE);
+        dbController = new DBController();
 
+        checkFirstRun();
+        dbController.getUserInformation();
+
+
+        /*initUserInfo();
+        Log.d("DATABASE_CHECK",User.INSTANCE.getMoney()+"");
+        Toast.makeText(this, User.INSTANCE.getMoney()+"",Toast.LENGTH_SHORT).show();
+        realm.beginTransaction();
+        userVO.setMoney(userVO.getMoney()+1500);
+        realm.commitTransaction();*/
+
+
+        /*
         init();
         controller = new Controller(stage);
         controller.initMap();
@@ -26,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         controller.moveDeer(new Position(3,0),new Position(4,0));
         controller.checkTile(new Position(5,1));
-
+*/
     }
 
 
@@ -46,4 +66,14 @@ public class MainActivity extends AppCompatActivity {
         stage = new Stage(model, 2,1,6,1,20);
 
     }
+
+    //run when user run first time.
+    private void checkFirstRun(){
+        Log.d("CHECK_FIRST_RUN","FIRST OPENED");
+        boolean isFirstRun = prefs.getBoolean("isFirstRun",true);
+        if(isFirstRun){
+            dbController.initDatabase(this);
+        }
+    }
+
 }

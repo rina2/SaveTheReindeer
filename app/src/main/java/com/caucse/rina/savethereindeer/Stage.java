@@ -2,19 +2,27 @@ package com.caucse.rina.savethereindeer;
 
 import java.util.ArrayList;
 
-public class Stage {
+import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
+import io.realm.annotations.PrimaryKey;
 
+public class Stage{
+
+    @PrimaryKey
+    private int stageNumber= 0;
     private int totalTurnNum = 0;
     private int numOfReindeer = 0;
     private int numOfWolf = 0;
     private int numOfSanta= 0;
     private int numOfTree= 0;
     private int sizeOfMap= 0;
-    private int stageNumber= 0;
     private int speedOfWolf = 0;
 
     private ArrayList<Model> model;
 
+
+    public Stage(){};
     public Stage(ArrayList<Model> list, int numOfWolf ,int speedOfWolf ,int size, int stageNumber, int totalTurnNum){
         this.totalTurnNum = totalTurnNum;
         this.numOfWolf = numOfWolf;
@@ -29,7 +37,6 @@ public class Stage {
             else if(list.get(i) instanceof Tree) numOfTree ++;
         }
     }
-
 
     public int getTotalTurnNum() {
         return totalTurnNum;
