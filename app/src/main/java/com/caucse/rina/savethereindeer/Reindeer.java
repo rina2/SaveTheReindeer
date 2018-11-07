@@ -35,6 +35,12 @@ public class Reindeer extends Model {
         }
     }
 
+    @Override
+    void move(Position p) {
+        super.move(p);
+        Log.d("REINDEER : MOVED", "("+position.getX()+","+position.getY()+")");
+    }
+
     public void setDisguise(boolean disguise) {
         isDisguise = disguise;
     }

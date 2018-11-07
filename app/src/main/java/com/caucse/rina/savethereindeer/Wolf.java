@@ -30,6 +30,7 @@ public class Wolf extends Model {
     void move(Position p) {
         addTrace(this.position);
         super.move(p);
+        Log.d("WOLF : MOVED", "("+position.getX()+","+position.getY()+")");
     }
 
     public boolean isMatchWithTrace(Position p){

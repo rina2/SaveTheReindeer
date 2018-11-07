@@ -145,7 +145,7 @@ public class Controller {
         for (int idx = 0; idx < chainPaths.size(); idx++) {
             if (chainPaths.get(idx).isMatchWithPosition(pos)) {
                 shortestPath.add(pos);
-                pos = chainPaths.get(idx).getParent();
+                //pos = chainPaths.get(idx).getParent();
                 break;
             }
         }
@@ -252,6 +252,8 @@ public class Controller {
         checkTile(p);
     }
 
+
+    //todo
     //check if Game is over/win, and draw in the grid
     public int stateUpdate() {
         int numOfDeer = 0;

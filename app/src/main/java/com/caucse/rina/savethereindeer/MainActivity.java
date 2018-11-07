@@ -24,6 +24,9 @@ public class MainActivity extends AppCompatActivity {
         controller.initMap();
         Log.d("FUNCTION CHECK","Success!");
 
+        controller.moveDeer(new Position(3,0),new Position(4,0));
+        controller.checkTile(new Position(5,1));
+
     }
 
 
@@ -40,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         model.add(new Tree(2,1));
         model.add(new Tree(2,3));
         model.add(new Tree(3,1));
-        stage = new Stage(model, 1,1,6,1,20);
+        stage = new Stage(model, 2,1,6,1,20);
 
     }
 }
