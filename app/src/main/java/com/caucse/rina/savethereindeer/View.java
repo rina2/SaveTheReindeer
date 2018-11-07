@@ -22,11 +22,14 @@ public class View {
         this.model = m;
         copymodel = new ArrayList<Model>();
     } //constructor
+
+
     public void setOnMap(GridView grid){}
 
 
     public void showNearlistDeer(Reindeer deer){
         deer.draw();
+        Log.d("CHECK_POSITION_DEER","START!. NEAREST DEER : ("+deer.getPosition().getX()+", "+deer.getPosition().getY()+")");
     }
 
 

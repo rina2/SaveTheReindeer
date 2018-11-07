@@ -11,7 +11,7 @@ public class Controller {
     //when open the tile, represent the status of tile.
     private final static int GAME_OVER = 100;
     private final static int GAME_WIN = 101;
-    private final static int NONE = 0;
+    final static int NONE = 0;
     final static int IS_CAPTURED = 1;
     final static int IS_TRACE = 2;
 
@@ -42,7 +42,6 @@ public class Controller {
         view.showNearlistDeer(distance.getReindeer());
     }
 
-
     private Distance findNearestDeer() {
 
         int[][] map = new int[stage.getSizeOfMap()][stage.getSizeOfMap()];
@@ -62,13 +61,13 @@ public class Controller {
         int shortest = 100;
         for (int idx = 0; idx < wolf.size(); idx++) {
             Model curWolf = wolf.get(idx);
-
             setDistanceOnMap(stage.getSizeOfMap(), map, curWolf.getPosition().getX(), curWolf.getPosition().getY());
 
             for (int deerIdx = 0; deerIdx < reindeer.size(); deerIdx++) {
                 Model deer = reindeer.get(deerIdx);
                 int curDistance = map[deer.getPosition().getX()][deer.getPosition().getY()];
                 if (curDistance < shortest) {
+                    shortest = curDistance;
                     distance.setInfo((Wolf) curWolf, (Reindeer) deer, curDistance);
                 } else if (curDistance == shortest) {
                     Random ran = new Random();
@@ -86,9 +85,7 @@ public class Controller {
         ArrayList<Position> openList = new ArrayList<>();
         ArrayList<ChainPath> chainPaths = new ArrayList<>();
         boolean[][] closeList = new boolean[size][size];
-        chainPaths.add(new ChainPath(new Position(posX, posY), null));
 
-        map = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 map[i][j] = 100;
@@ -99,37 +96,38 @@ public class Controller {
             if (model instanceof Tree || model instanceof Santa)
                 map[model.getPosition().getX()][model.getPosition().getY()] = -1;
         }
+        chainPaths.add(new ChainPath(new Position(posX,posY),null));
         openList.add(new Position(posX, posY));
         map[posX][posY] = 0;
 
         while (!openList.isEmpty()) {
-            Position p = openList.get(0);
-            int x = p.getX();
-            int y = p.getY();
+            Position parent = openList.get(0);
+            int x = parent.getX();
+            int y = parent.getY();
 
             if (x > 0 && !closeList[x - 1][y] && map[x - 1][y] > map[x][y] + 1) {
                 map[x - 1][y] = map[x][y] + 1;
                 Position pos = new Position(x - 1, y);
                 openList.add(pos);
-                chainPaths.add(new ChainPath(new Position(x, y), pos));
+                chainPaths.add(new ChainPath(pos, parent));
             }
             if (x < size - 1 && !closeList[x + 1][y] && map[x + 1][y] > map[x][y] + 1) {
                 map[x + 1][y] = map[x][y] + 1;
                 Position pos = new Position(x + 1, y);
                 openList.add(pos);
-                chainPaths.add(new ChainPath(new Position(x, y), pos));
+                chainPaths.add(new ChainPath(pos, parent));
             }
-            if (y > 0 && !closeList[x][y - 1] && map[x][y - 1] > map[x][y - 1]) {
+            if (y > 0 && !closeList[x][y - 1] && map[x][y - 1] > map[x][y] + 1) {
                 map[x][y - 1] = map[x][y] + 1;
                 Position pos = new Position(x, y - 1);
                 openList.add(pos);
-                chainPaths.add(new ChainPath(new Position(x, y), pos));
+                chainPaths.add(new ChainPath(pos, parent));
             }
             if (y < size - 1 && !closeList[x][y + 1] && map[x][y + 1] > map[x][y] + 1) {
                 map[x][y + 1] = map[x][y] + 1;
                 Position pos = new Position(x, y + 1);
                 openList.add(pos);
-                chainPaths.add(new ChainPath(new Position(x, y), pos));
+                chainPaths.add(new ChainPath(pos, parent));
             }
             openList.remove(0);
             closeList[x][y] = true;
@@ -138,7 +136,6 @@ public class Controller {
 
         return chainPaths;
     }
-
 
     //path(0) is deer, path(last) is wolf
     ArrayList<Position> findShortestPath(ArrayList<ChainPath> chainPaths, Distance distance) {
@@ -173,6 +170,7 @@ public class Controller {
 
     // save the status and show
     public boolean checkTile(Position position) {
+        Log.d("CHECK_LOG_POSITION","("+position.getX()+", "+ position.getY()+") IS CHEKCED!");
         boolean is_trace = false;
 
         for (int idx = 0; idx < stage.getModel().size(); idx++) {
@@ -254,16 +252,15 @@ public class Controller {
         checkTile(p);
     }
 
-
-
-    //todo
     //check if Game is over/win, and draw in the grid
     public int stateUpdate() {
         int numOfDeer = 0;
 
         if (isGameOver || remainTurn == 0) {
+            view.updateMap();
             return GAME_OVER;
         } else if (isGameWin) {
+            view.updateMap();
             return GAME_WIN;
         }
 
@@ -280,13 +277,16 @@ public class Controller {
 
                     Model second = stage.getModel().get(idx);
                     if (model == second) continue;
-                    else if (second instanceof Wolf && model.getPosition().isSamePosition(second.getPosition()))
+                    else if (second instanceof Wolf && model.getPosition().isSamePosition(second.getPosition())) {
+                        stage.getModel().remove(deer);
+                        numOfDeer--;
+                        view.updateMap();
                         return GAME_OVER; //Captured! deer dead..
-                    else if (second instanceof Santa && model.getPosition().isSamePosition(second.getPosition())) {
+                    }else if (second instanceof Santa && model.getPosition().isSamePosition(second.getPosition())) {
                         //if met santa, remove reindeer and reduce santa's capacity
                         ((Santa) second).decreaseCapacity();
                         stage.getModel().remove(deer);
-
+                        numOfDeer--;
                         if (((Santa) second).getCapacity() == 0) {
                             stage.getModel().remove(second);
                         }
@@ -294,7 +294,11 @@ public class Controller {
                 }
             }
         }
-        if (numOfDeer == 0) return GAME_WIN;
+
+        view.updateMap();
+        if (numOfDeer == 0){
+            return GAME_WIN;
+        }
 
 
         return 0;
@@ -317,6 +321,10 @@ public class Controller {
                 if (x < stage.getSizeOfMap() - 1) map[x + 1][y] = -1;
                 if (y > 0) map[x][y - 1] = -1;
                 if (y < stage.getSizeOfMap() - 1) map[x][y + 1] = -1;
+                if(x>0 && y >0) map[x-1][y-1] = -1;
+                if(x< stage.getSizeOfMap()-1 && y>0 ) map[x+1][y-1] = -1;
+                if(x>0 && y < stage.getSizeOfMap()-1) map[x-1][y+1] = -1;
+                if(x< stage.getSizeOfMap()-1 && y< stage.getSizeOfMap()-1) map[x+1][y+1] = -1;
             }
         }
         //for every wolf, make new Wolf instance and set position
@@ -327,14 +335,16 @@ public class Controller {
                 int ranY = random.nextInt(stage.getSizeOfMap());
 
                 if (map[ranX][ranY] != -1) {
-                    stage.getModel().add(new Wolf(ranX, ranY));
+                    Wolf curWolf = new Wolf(ranX, ranY);
+                    stage.getModel().add(curWolf);
                     map[ranX][ranY] = -1;
+                    Log.d("CHECK_POSITION_WOLF", "POSITION COMPLETE : ("+curWolf.getPosition().getX()+","+curWolf.getPosition().getY()+")");
                     break;
                 }
                 continue;
             }
         }
-        Log.d("WOLF_SETTING", "POSITION COMPLETE");
+
     }
 
     private void moveWolf() {
@@ -352,7 +362,7 @@ public class Controller {
     }
 
 
-    
+
     /******************************Inner Class *****************************/
 
     class Distance {
@@ -380,7 +390,7 @@ public class Controller {
         Position parent;
         Position position;
 
-        ChainPath(Position parent, Position position) {
+        ChainPath(Position position, Position parent) {
             this.parent = parent;
             this.position = position;
         }

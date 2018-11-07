@@ -2,6 +2,7 @@ package com.caucse.rina.savethereindeer;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -9,9 +10,10 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     ArrayList<Model> model;
+    Stage stage;
     Controller controller;
 
-    Stage stage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,7 +21,8 @@ public class MainActivity extends AppCompatActivity {
 
         init();
         controller = new Controller(stage);
-        Toast.makeText(this, "ho", Toast.LENGTH_SHORT).show();
+        controller.initMap();
+        Log.d("FUNCTION CHECK","Success!");
 
     }
 
@@ -30,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         model.add(new Reindeer(0,4,0));
         model.add(new Reindeer(1,3,1));
         model.add(new Reindeer(3,2,2));
-        model.add(new Reindeer(4,0,3));
+        model.add(new Reindeer(3,0,3));
         model.add(new Santa(1,1,2));
         model.add(new Santa(1,5,2));
         model.add(new Tree(1,4));
