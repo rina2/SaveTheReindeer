@@ -18,17 +18,24 @@ import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
+import static io.realm.Realm.init;
+
 public class DBController {
     private Realm realm;
-
     private final String WOLF = "WOLF";
     private final String REINDEER = "REINDEER";
     private final String TREE = "TREE";
     private final String SANTA = "SANTA";
+    private Context context;
 
-    public void initDatabase(Context context) throws JSONException {
+    DBController(Context con){
+        context = con;
         realm.init(context);
         realm = Realm.getDefaultInstance();
+    }
+
+    public void initDatabase() throws JSONException {
+
         realm.beginTransaction();
 
 
@@ -37,7 +44,7 @@ public class DBController {
         user.setInfo(0, 0, 0, 0, 500);
 
         /****************Store Stage Information******************/
-        saveStageInfoToDB(getStringFromJSON(context));
+        saveStageInfoToDB(getStringFromJSON());
 
 
 
@@ -46,9 +53,8 @@ public class DBController {
 
 
     //when open the app, get user information from database.
-    public void getUserInformation(Context context) {
-        realm.init(context);
-        realm = Realm.getDefaultInstance();
+    public void getUserInformation() {
+
         realm.beginTransaction();
         DBUser DBUser = realm.where(DBUser.class).findFirst();
         User user = User.INSTANCE;
@@ -61,6 +67,7 @@ public class DBController {
     //When Change User information, we have to update DBUser database.
     public void updateUserInformation() {
         User user = User.INSTANCE;
+
         realm.beginTransaction();
         DBUser vo = realm.where(DBUser.class).findFirst();
         vo.setInfo(user.getClearStage(), user.getItemDisguise(), user.getItemSearch(), user.getItemSlow(), user.getMoney());
@@ -102,7 +109,7 @@ public class DBController {
     }
 
 
-    private String getStringFromJSON(Context context){
+    private String getStringFromJSON(){
         AssetManager assetManager = context.getResources().getAssets();
 
         try{

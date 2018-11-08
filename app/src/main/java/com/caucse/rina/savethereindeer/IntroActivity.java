@@ -32,7 +32,7 @@ public class IntroActivity extends AppCompatActivity {
         prefs = getSharedPreferences("Pref",MODE_PRIVATE);
         logo = (ImageView)findViewById(R.id.splash);
         btnStart = (Button)findViewById(R.id.btnStart);
-        dbController = new DBController();
+        dbController = new DBController(this);
         handler = new Handler();
 
         /***************** splash animation and show game start button ******************/
@@ -48,7 +48,7 @@ public class IntroActivity extends AppCompatActivity {
 
         checkFirstRun();    //save information to DB
 
-        dbController.getUserInformation(this);
+        dbController.getUserInformation();
         Log.d("DATABASE_CHECK","getting user information : complete");
 
         btnStart.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +70,7 @@ public class IntroActivity extends AppCompatActivity {
         boolean isFirstRun = prefs.getBoolean("isFirstRun",true);
         if(isFirstRun){
             try {
-                dbController.initDatabase(this);
+                dbController.initDatabase();
                 prefs.edit().putBoolean("isFirstRun",false).apply();
             } catch (JSONException e) {
                 e.printStackTrace();

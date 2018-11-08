@@ -47,18 +47,16 @@ public class User {
 
     public void increaseStageClear() {
         this.clearStage++;
-        updateDB();
     }
 
     public void increaseItemDisguise() {
         this.itemDisguise++;
-        updateDB();
+
     }
 
 
     public void decreaseItemDisguise() {
         this.itemDisguise--;
-        updateDB();
     }
 
     public void increaseItemSlow() {
@@ -85,8 +83,4 @@ public class User {
         this.money -= minus;
     }
 
-    private void updateDB(){
-        DBController con = new DBController();
-        con.updateUserInformation();
-    }
 }

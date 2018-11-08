@@ -28,10 +28,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         prefs = getSharedPreferences("Pref",MODE_PRIVATE);
-        dbController = new DBController();
+        dbController = new DBController(this);
 
         try {
-            dbController.initDatabase(this);
+            dbController.initDatabase();
         } catch (JSONException e) {
             e.printStackTrace();
         }
