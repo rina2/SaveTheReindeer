@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 
 import io.realm.Realm;
@@ -23,11 +25,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         prefs = getSharedPreferences("Pref",MODE_PRIVATE);
         dbController = new DBController();
 
-        checkFirstRun();
-        dbController.getUserInformation();
+        try {
+            dbController.initDatabase(this);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //checkFirstRun();
+        //dbController.getUserInformation();
 
 
         /*initUserInfo();
@@ -65,15 +74,6 @@ public class MainActivity extends AppCompatActivity {
         model.add(new Tree(3,1));
         stage = new Stage(model, 2,1,6,1,20);
 
-    }
-
-    //run when user run first time.
-    private void checkFirstRun(){
-        Log.d("CHECK_FIRST_RUN","FIRST OPENED");
-        boolean isFirstRun = prefs.getBoolean("isFirstRun",true);
-        if(isFirstRun){
-            dbController.initDatabase(this);
-        }
     }
 
 }

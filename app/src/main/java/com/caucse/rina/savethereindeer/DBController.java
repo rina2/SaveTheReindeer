@@ -1,7 +1,16 @@
 package com.caucse.rina.savethereindeer;
 
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import io.realm.Realm;
@@ -17,7 +26,7 @@ public class DBController {
     private final String TREE = "TREE";
     private final String SANTA = "SANTA";
 
-    public void initDatabase(Context context) {
+    public void initDatabase(Context context) throws JSONException {
         realm.init(context);
         realm = Realm.getDefaultInstance();
         realm.beginTransaction();
@@ -28,9 +37,8 @@ public class DBController {
         user.setInfo(0, 0, 0, 0, 500);
 
         /****************Store Stage Information******************/
-        //todo
+        saveStageInfoToDB(getStringFromJSON(context));
 
-        //stage 1
 
 
         realm.commitTransaction();
@@ -38,7 +46,9 @@ public class DBController {
 
 
     //when open the app, get user information from database.
-    public void getUserInformation() {
+    public void getUserInformation(Context context) {
+        realm.init(context);
+        realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         DBUser DBUser = realm.where(DBUser.class).findFirst();
         User user = User.INSTANCE;
@@ -90,5 +100,61 @@ public class DBController {
         return new Stage(modelList, curStage.getNumOfWolf(), curStage.getSpeedOfWolf(), curStage.getSizeOfMap(),
                 curStage.getStageNumber(), curStage.getTotalTurnNum());
     }
+
+
+    private String getStringFromJSON(Context context){
+        AssetManager assetManager = context.getResources().getAssets();
+
+        try{
+            AssetManager.AssetInputStream ais = (AssetManager.AssetInputStream)assetManager.open("test.json");
+            BufferedReader br = new BufferedReader(new InputStreamReader(ais));
+            StringBuilder sb = new StringBuilder();
+            int bufferSize = 1024*1024;
+
+            char readBuf[] = new char[bufferSize];
+            int resultSize =0;
+
+            while((resultSize = br.read(readBuf)) != -1){
+                if(resultSize == bufferSize){
+                    sb.append(readBuf);
+                }else{
+                    for(int i =0; i<resultSize; i++){
+                        sb.append(readBuf[i]);
+                    }
+                }
+            }
+            String jString = sb.toString();
+            Log.d("JSON_CONTENT",jString);
+            return jString;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private void saveStageInfoToDB(String str) throws JSONException {
+
+        JSONObject jsonObject = new JSONObject(str);
+        JSONArray jsonStage = jsonObject.getJSONArray("DBStage");
+        JSONArray jsonModel = jsonObject.getJSONArray("DBModel");
+
+        for(int i = 0; i< jsonStage.length();i++){
+            JSONObject curStage = jsonStage.getJSONObject(i);
+            DBStage dbStage = new DBStage(curStage.getInt("stageNumber"),curStage.getInt("totalTurnNum"),
+                    curStage.getInt("numOfReindeer"),curStage.getInt("numOfWolf"),curStage.getInt("numOfSanta"),curStage.getInt("numOfTree"),
+                    curStage.getInt("sizeOfMap"),curStage.getInt("speedOfWolf"));
+            dbStage = realm.createObject(DBStage.class, curStage.getInt("stageNumber"));
+        }
+
+        for(int i = 0; i<jsonModel.length(); i++){
+            JSONObject curModel = jsonModel.getJSONObject(i);
+            DBModel dbModel = new DBModel(curModel.getInt("stageNum"),curModel.getInt("posX"),
+                    curModel.getInt("posX"),curModel.getString("kind"));
+            dbModel = realm.createObject(DBModel.class);
+        }
+
+    }
+
 
 }

@@ -9,9 +9,17 @@ public class DBModel extends RealmObject {
     private int posY;
     private String kind;
 
+    public DBModel(){}
+    public DBModel(int s, int px, int py, String kind){
+        stageNum = s;
+        posX = px;
+        posY = py;
+        this.kind = kind;
+    }
     public int getStage() {
         return stageNum;
     }
+
     public String getKind(){
         return kind;
     }

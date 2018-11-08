@@ -19,8 +19,18 @@ public class DBStage extends RealmObject {
     private int sizeOfMap= 0;
     private int speedOfWolf = 0;
 
-    DBStage(){}
+    public DBStage(){}
 
+    DBStage(int s, int t, int nr, int nw, int ns, int nt, int size, int sw){
+        stageNumber = s;
+        totalTurnNum = t;
+        numOfReindeer = nr;
+        numOfWolf = nw;
+        numOfSanta = ns;
+        numOfTree = nt;
+        sizeOfMap = size;
+        speedOfWolf = sw;
+    }
     public int getStageNumber() {
         return stageNumber;
     }
