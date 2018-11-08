@@ -9,7 +9,6 @@ import io.realm.annotations.PrimaryKey;
 
 public class Stage{
 
-    @PrimaryKey
     private int stageNumber= 0;
     private int totalTurnNum = 0;
     private int numOfReindeer = 0;
@@ -38,6 +37,9 @@ public class Stage{
         }
     }
 
+    public void setModel(ArrayList<Model> model){
+        this.model = model;
+    }
     public int getTotalTurnNum() {
         return totalTurnNum;
     }
@@ -74,5 +76,8 @@ public class Stage{
         return speedOfWolf;
     }
 
+    public int getStageNumber() {
+        return stageNumber;
+    }
     //todo : make clone method
 }
