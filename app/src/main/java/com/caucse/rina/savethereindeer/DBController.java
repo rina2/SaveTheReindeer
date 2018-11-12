@@ -78,11 +78,10 @@ public class DBController {
 
         realm.beginTransaction();
         ArrayList<Model> model;
-        DBStage curStage = realm.where(DBStage.class).equalTo("stageNumber",stageNum).findFirst();
+        DBStage curStage = realm.where(DBStage.class).equalTo("stageNumber", stageNum).findFirst();
         int santaCapacity = (int) (curStage.getNumOfReindeer() / 2);
         int deerNum = 0;
         ArrayList<Model> modelList = new ArrayList<>();
-        realm.beginTransaction();
         RealmResults<DBModel> dbModel = realm.where(DBModel.class).equalTo("stageNum", stageNum).findAll();
         for (int i = 0; i < dbModel.size(); i++) {
             DBModel curModel = dbModel.get(i);
@@ -148,17 +147,19 @@ public class DBController {
 
         for(int i = 0; i< jsonStage.length();i++){
             JSONObject curStage = jsonStage.getJSONObject(i);
-            DBStage dbStage = new DBStage(curStage.getInt("stageNumber"),curStage.getInt("totalTurnNum"),
+
+            DBStage dbStage = realm.createObject(DBStage.class, curStage.getInt("stageNumber"));
+            dbStage.setDBStage(curStage.getInt("totalTurnNum"),
                     curStage.getInt("numOfReindeer"),curStage.getInt("numOfWolf"),curStage.getInt("numOfSanta"),curStage.getInt("numOfTree"),
                     curStage.getInt("sizeOfMap"),curStage.getInt("speedOfWolf"));
-            dbStage = realm.createObject(DBStage.class, curStage.getInt("stageNumber"));
         }
 
         for(int i = 0; i<jsonModel.length(); i++){
             JSONObject curModel = jsonModel.getJSONObject(i);
-            DBModel dbModel = new DBModel(curModel.getInt("stageNum"),curModel.getInt("posX"),
+
+            DBModel dbModel = realm.createObject(DBModel.class);
+            dbModel.setDBModel(curModel.getInt("stageNum"),curModel.getInt("posX"),
                     curModel.getInt("posX"),curModel.getString("kind"));
-            dbModel = realm.createObject(DBModel.class);
         }
 
     }

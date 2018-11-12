@@ -10,7 +10,8 @@ public class DBModel extends RealmObject {
     private String kind;
 
     public DBModel(){}
-    public DBModel(int s, int px, int py, String kind){
+
+    public void setDBModel(int s, int px, int py, String kind){
         stageNum = s;
         posX = px;
         posY = py;

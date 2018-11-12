@@ -29,7 +29,6 @@ public class IntroActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
 
-        prefs = getSharedPreferences("Pref",MODE_PRIVATE);
         logo = (ImageView)findViewById(R.id.splash);
         btnStart = (Button)findViewById(R.id.btnStart);
         dbController = new DBController(this);
@@ -66,12 +65,15 @@ public class IntroActivity extends AppCompatActivity {
 
 
     private void checkFirstRun() {
+        SharedPreferences prefs = getSharedPreferences("isFirst",MODE_PRIVATE);
         Log.d("CHECK_FIRST_RUN","FIRST OPENED");
-        boolean isFirstRun = prefs.getBoolean("isFirstRun",true);
-        if(isFirstRun){
+        boolean isFirstRun = prefs.getBoolean("isFirst",false);
+        if(!isFirstRun){
             try {
                 dbController.initDatabase();
-                prefs.edit().putBoolean("isFirstRun",false).apply();
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("isFirst",true);
+                editor.commit();
             } catch (JSONException e) {
                 e.printStackTrace();
                 Log.d("DBCONTROLLER_ERROR","fail to save the data to database");

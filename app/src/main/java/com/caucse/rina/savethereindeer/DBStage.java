@@ -10,19 +10,18 @@ import io.realm.annotations.PrimaryKey;
 public class DBStage extends RealmObject {
 
     @PrimaryKey
-    private int stageNumber= 0;
-    private int totalTurnNum = 0;
-    private int numOfReindeer = 0;
-    private int numOfWolf = 0;
-    private int numOfSanta= 0;
-    private int numOfTree= 0;
-    private int sizeOfMap= 0;
-    private int speedOfWolf = 0;
+    private int stageNumber;
+    private int totalTurnNum;
+    private int numOfReindeer;
+    private int numOfWolf;
+    private int numOfSanta;
+    private int numOfTree;
+    private int sizeOfMap;
+    private int speedOfWolf;
 
     public DBStage(){}
 
-    DBStage(int s, int t, int nr, int nw, int ns, int nt, int size, int sw){
-        stageNumber = s;
+    public void setDBStage(int t, int nr, int nw, int ns, int nt, int size, int sw){
         totalTurnNum = t;
         numOfReindeer = nr;
         numOfWolf = nw;
