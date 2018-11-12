@@ -27,7 +27,7 @@ public class StageListActivity extends AppCompatActivity {
 
         /************** Setting color on the list ***************/
         int clearStage = user.getClearStage();
-        for(int i = 0; i<clearStage; i++){
+        for(int i = 0; i<clearStage+1; i++){
             Button btn = (Button)grid.getChildAt(i);
             btn.setBackground(this.getResources().getDrawable(R.drawable.clearsquare));
         }
