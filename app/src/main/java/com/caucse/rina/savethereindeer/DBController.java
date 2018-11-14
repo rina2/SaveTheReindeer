@@ -159,7 +159,7 @@ public class DBController {
 
             DBModel dbModel = realm.createObject(DBModel.class);
             dbModel.setDBModel(curModel.getInt("stageNum"),curModel.getInt("posX"),
-                    curModel.getInt("posX"),curModel.getString("kind"));
+                    curModel.getInt("posY"),curModel.getString("kind"));
         }
 
     }

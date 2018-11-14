@@ -1,6 +1,8 @@
 package com.caucse.rina.savethereindeer;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.GridLayout;
 
 import java.util.ArrayList;
 
@@ -22,21 +24,24 @@ public class Controller {
     private boolean isGameWin;
     private boolean isItemSearchUsed;
     private Stage stage;
+    private Context context;
     private User user = User.INSTANCE;
 
 
-    Controller(Stage stage) {
+    Controller(Stage stage,Context context) {
         remainTurn = stage.getTotalTurnNum();
+        this.context = context;
         isGameWin = false;
         isGameOver = false;
         isItemSearchUsed = false;
-        view = new View(stage.getModel());
+        view = new View(stage,context);
         this.stage = stage;
     }
 
     /********************Start Game *****************************/
 
-    public void initMap() {
+    public void initMap(GridLayout gridLayout) {
+        view.setOnMap(gridLayout);
         initWolfPosition(); //set the position of wolf
         Distance distance = findNearestDeer();
         view.showNearlistDeer(distance.getReindeer());

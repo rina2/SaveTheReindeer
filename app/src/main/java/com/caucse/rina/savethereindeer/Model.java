@@ -20,4 +20,7 @@ abstract class Model {
     void move(Position p){
         this.position = p;
     }
+    public int getGridPosition(int sizeOfMap){
+        return sizeOfMap*position.getX() + position.getY();
+    }
 }

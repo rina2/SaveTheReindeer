@@ -22,6 +22,11 @@ public class Stage{
 
 
     public Stage(){};
+
+    public void sam(int i){
+        this.sizeOfMap = i;
+    }
+
     public Stage(ArrayList<Model> list, int numOfWolf ,int speedOfWolf ,int size, int stageNumber, int totalTurnNum){
         this.totalTurnNum = totalTurnNum;
         this.numOfWolf = numOfWolf;
