@@ -18,6 +18,7 @@ public class Controller {
     final static int IS_TRACE = 2;
 
 
+    private int[] map;
     private int remainTurn;
     private View view;
     private boolean isGameOver;
@@ -36,15 +37,16 @@ public class Controller {
         isItemSearchUsed = false;
         view = new View(stage,context);
         this.stage = stage;
+        map = stage.getIntegerArray();
     }
 
     /********************Start Game *****************************/
 
-    public void initMap(GridLayout gridLayout) {
-        view.setOnMap(gridLayout);
+    public void initMap(GridAdapter.ItemListener itemListener) {
         initWolfPosition(); //set the position of wolf
         Distance distance = findNearestDeer();
-        view.showNearlistDeer(distance.getReindeer());
+        view.setOnMap(itemListener);
+        view.showNearestDeer(distance.getReindeer());
     }
 
     private Distance findNearestDeer() {
@@ -157,7 +159,7 @@ public class Controller {
         while (true) {
             pos = findParentPosition(chainPaths, pos);
             if (pos == null) break;
-            shortestPath.add(pos);
+            shortestPath.add(0,pos);
         }
         return shortestPath;
 
@@ -174,7 +176,8 @@ public class Controller {
     /**********************************User Action ************************************/
 
     // save the status and show
-    public boolean checkTile(Position position) {
+    public boolean checkTile(int pos) {
+        Position position = Position.getPositionFromGrid(pos, stage.getSizeOfMap());
         Log.d("CHECK_LOG_POSITION","("+position.getX()+", "+ position.getY()+") IS CHEKCED!");
         boolean is_trace = false;
 
@@ -210,8 +213,10 @@ public class Controller {
 
 
     //if return value is false, user input wrong movement position.
-    public boolean moveDeer(Position fromPos, Position toPos) {
+    public boolean moveDeer(int fPos, int tPos) {
 
+        Position fromPos = Position.getPositionFromGrid(fPos, stage.getSizeOfMap());
+        Position toPos = Position.getPositionFromGrid(tPos, stage.getSizeOfMap());
         for (int i = 0; i < stage.getModel().size(); i++) {
             Model curModel = stage.getModel().get(i);
 
@@ -251,10 +256,37 @@ public class Controller {
     }
 
 
+    public void setDeerMovementTile(int pos, int movedeer){
+
+        int temp = pos;
+        temp = pos+1;
+        if(temp <getSizeOfMap()*getSizeOfMap()){
+            if(map[temp] != Stage.TREE && map[temp] != Stage.REINDEER)
+                map[temp] = movedeer;
+        }
+        temp = pos-1;
+        if(temp >0){
+            if(map[temp] != Stage.TREE && map[temp] != Stage.REINDEER)
+                map[temp] = movedeer;
+        }
+        temp = pos + stage.getSizeOfMap();
+        if(temp <getSizeOfMap()*getSizeOfMap()){
+            if(map[temp] != Stage.TREE && map[temp] != Stage.REINDEER)
+                map[temp] = movedeer;
+        }
+
+        temp = pos - stage.getSizeOfMap();
+        if(temp >0){
+            if(map[temp] != Stage.TREE && map[temp] != Stage.REINDEER)
+                map[temp] = movedeer;
+        }
+        view.updateMap(map);
+    }
+
     public void useItemSearch(Position p) {
         user.decreaseItemSearch();
         isItemSearchUsed = true;
-        checkTile(p);
+        //checkTile(p);
     }
 
 
@@ -262,12 +294,11 @@ public class Controller {
     //check if Game is over/win, and draw in the grid
     public int stateUpdate() {
         int numOfDeer = 0;
-
         if (isGameOver || remainTurn == 0) {
-            view.updateMap();
+            view.updateMap(map);
             return GAME_OVER;
         } else if (isGameWin) {
-            view.updateMap();
+            view.updateMap(map);
             return GAME_WIN;
         }
 
@@ -287,7 +318,7 @@ public class Controller {
                     else if (second instanceof Wolf && model.getPosition().isSamePosition(second.getPosition())) {
                         stage.getModel().remove(deer);
                         numOfDeer--;
-                        view.updateMap();
+                        view.updateMap(map);
                         return GAME_OVER; //Captured! deer dead..
                     }else if (second instanceof Santa && model.getPosition().isSamePosition(second.getPosition())) {
                         //if met santa, remove reindeer and reduce santa's capacity
@@ -301,8 +332,8 @@ public class Controller {
                 }
             }
         }
-
-        view.updateMap();
+        map = stage.getIntegerArray();
+        view.updateMap(map);
         if (numOfDeer == 0){
             return GAME_WIN;
         }
@@ -312,6 +343,9 @@ public class Controller {
     }
 
 
+    public int getSizeOfMap(){
+        return stage.getSizeOfMap();
+    }
 
     private void initWolfPosition() {
 
@@ -351,8 +385,17 @@ public class Controller {
                 continue;
             }
         }
-
+        updateMap();
     }
+
+    public int[] getMap(){
+        return map;
+    }
+
+    private void updateMap(){
+        map = stage.getIntegerArray();
+    }
+
 
     private void moveWolf() {
         Distance distance = findNearestDeer();
@@ -364,10 +407,11 @@ public class Controller {
         ArrayList<Position> shortestPath = findShortestPath(chainPaths, distance);
 
         for(int i = 0;i<stage.getSpeedOfWolf(); i++){
-            distance.getWolf().move(shortestPath.get(shortestPath.size()-2-i));
+            if(i+1>= shortestPath.size()) break;
+            distance.getWolf().move(shortestPath.get(i+1));
         }
+        
     }
-
 
 
     /******************************Inner Class *****************************/
@@ -411,5 +455,7 @@ public class Controller {
         }
 
     }
+
+
 
 }

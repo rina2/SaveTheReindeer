@@ -18,14 +18,18 @@ public class Stage{
     private int sizeOfMap= 0;
     private int speedOfWolf = 0;
 
+    public static final int MOVEDEER = 2223;
+    public static final int REINDEER = 100;
+    public static final int TREE = 101;
+    public static  final int SANTA = 102;
+    public static  final int WOLF = 103;
+    public static final int GRASS  = 104;
+
     private ArrayList<Model> model;
 
 
     public Stage(){};
 
-    public void sam(int i){
-        this.sizeOfMap = i;
-    }
 
     public Stage(ArrayList<Model> list, int numOfWolf ,int speedOfWolf ,int size, int stageNumber, int totalTurnNum){
         this.totalTurnNum = totalTurnNum;
@@ -42,9 +46,6 @@ public class Stage{
         }
     }
 
-    public void setModel(ArrayList<Model> model){
-        this.model = model;
-    }
     public int getTotalTurnNum() {
         return totalTurnNum;
     }
@@ -57,13 +58,6 @@ public class Stage{
         return sizeOfMap;
     }
 
-    public int getNumOfReindeer() {
-        return numOfReindeer;
-    }
-
-    public int getNumOfSanta() {
-        return numOfSanta;
-    }
 
     public int getNumOfWolf() {
         return numOfWolf;
@@ -85,4 +79,25 @@ public class Stage{
         return stageNumber;
     }
     //todo : make clone method
+
+    public int[] getIntegerArray(){
+        int[] array = new int[sizeOfMap*sizeOfMap];
+
+        for(int i = 0; i<model.size(); i++){
+            Model curModel = model.get(i);
+            if(curModel instanceof Reindeer){
+                array[curModel.getGridPosition(sizeOfMap)] = REINDEER;
+            }else if( curModel instanceof  Tree){
+                array[curModel.getGridPosition(sizeOfMap)] = TREE;
+            }else if( curModel instanceof Santa){
+                array[curModel.getGridPosition(sizeOfMap)] = SANTA;
+            }else if( curModel instanceof  Wolf){
+                array[curModel.getGridPosition(sizeOfMap)] = WOLF;
+            }else{
+                array[curModel.getGridPosition(sizeOfMap)] = GRASS;
+            }
+        }
+
+        return array;
+    }
 }

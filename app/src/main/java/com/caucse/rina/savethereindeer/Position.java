@@ -8,8 +8,8 @@ public class Position {
         pointX = x;
         pointY = y;
     }
-    public void getGridPosition(){
-
+    public static Position getPositionFromGrid(int num,int size){
+        return new Position(num/size, num%size);
     }
 
     public int getX(){ return pointX;}
