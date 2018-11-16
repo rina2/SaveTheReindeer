@@ -141,27 +141,30 @@ public class DBController {
 
     private void saveStageInfoToDB(String str) throws JSONException {
 
+    try {
         JSONObject jsonObject = new JSONObject(str);
         JSONArray jsonStage = jsonObject.getJSONArray("DBStage");
         JSONArray jsonModel = jsonObject.getJSONArray("DBModel");
 
-        for(int i = 0; i< jsonStage.length();i++){
+        for (int i = 0; i < jsonStage.length(); i++) {
             JSONObject curStage = jsonStage.getJSONObject(i);
 
             DBStage dbStage = realm.createObject(DBStage.class, curStage.getInt("stageNumber"));
             dbStage.setDBStage(curStage.getInt("totalTurnNum"),
-                    curStage.getInt("numOfReindeer"),curStage.getInt("numOfWolf"),curStage.getInt("numOfSanta"),curStage.getInt("numOfTree"),
-                    curStage.getInt("sizeOfMap"),curStage.getInt("speedOfWolf"));
+                    curStage.getInt("numOfReindeer"), curStage.getInt("numOfWolf"), curStage.getInt("numOfSanta"), curStage.getInt("numOfTree"),
+                    curStage.getInt("sizeOfMap"), curStage.getInt("speedOfWolf"));
         }
 
-        for(int i = 0; i<jsonModel.length(); i++){
+        for (int i = 0; i < jsonModel.length(); i++) {
             JSONObject curModel = jsonModel.getJSONObject(i);
 
             DBModel dbModel = realm.createObject(DBModel.class);
-            dbModel.setDBModel(curModel.getInt("stageNum"),curModel.getInt("posX"),
-                    curModel.getInt("posY"),curModel.getString("kind"));
+            dbModel.setDBModel(curModel.getInt("stageNum"), curModel.getInt("posX"),
+                    curModel.getInt("posY"), curModel.getString("kind"));
         }
-
+    }catch (Exception e){
+        return;
+    }
     }
 
 

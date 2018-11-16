@@ -2,20 +2,11 @@ package com.caucse.rina.savethereindeer;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.sip.SipSession;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.widget.FrameLayout;
-import android.widget.GridLayout;
-import android.widget.GridView;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 public class View  {
 
@@ -27,55 +18,58 @@ public class View  {
     private RecyclerView recyclerView;
     private GridAdapter adapter;
     private int[] map;
+    private ArrayList<Model> grid;
     private Context context;
     private Stage stage;
 
-    View(Stage stage,Context context){
+    View(Stage stage,Context context,ArrayList<Model> grid){
         recyclerView = ((Activity)context).getWindow().getDecorView().findViewById(R.id.recyclerView);
         this.stage = stage;
         this.context = context;
         map = stage.getIntegerArray();
+        this.grid = grid;
 
     } //constructor
 
 
     public void setOnMap(GridAdapter.ItemListener itemListener) {
-
         layoutManager = new GridLayoutManager(context, stage.getSizeOfMap());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new GridAdapter(context,map,itemListener);
+        adapter = new GridAdapter(context,grid,itemListener);
         recyclerView.setAdapter(adapter);
-
-
     }
 
     public void showNearestDeer(Reindeer deer){
-        deer.draw();
-        Log.d("CHECK_POSITION_DEER","START!. NEAREST DEER : ("+deer.getPosition().getX()+", "+deer.getPosition().getY()+")");
-        //todo : animation that show nearest deer. shinny tile!
-
-
-    }
-
-    public void updateMap(int[] map){
-        this.map = map;
-        adapter.update(this.map);
+        Toast.makeText(context.getApplicationContext(),"Game Start! nearest deer : ("+deer.getPosition().getX()+","+deer.getPosition().getY()+")",Toast.LENGTH_SHORT).show();
+        int position = deer.getPosition().getX()*stage.getSizeOfMap()+deer.getPosition().getY();
+        //todo : notify who is the nearest deer
 
     }
 
+    public void updateMap(){
+        adapter.setItem(grid);
+        adapter.notifyDataSetChanged();
+    }
 
-    public void checkTile(Position pos, int status){
+    public void updateTile(int pos){
+        recyclerView.getAdapter().notifyItemChanged(pos);
+    }
+
+    public void checkTile(Position position, int status){
         switch(status){
             case IS_CAPTURE:{
-                Log.d("CHEKC_TILE","IS_CAPTURE");
+                Log.d("TILE CHECK","IS_CAPTURE");
                 break;
             }
             case IS_TRACE:{
-                Log.d("CHEKC_TILE","IS_TRACE");
+                int pos = position.getX()*stage.getSizeOfMap() + position.getY();
+                map[pos] = IS_TRACE;
+                adapter.notifyItemChanged(pos);
+
                 break;
             }
             case NONE:{
-                Log.d("CHEKC_TILE","IS_TRACE");
+                Log.d("TILE CHECK","IS_TRACE");
                 break;
             }
         }

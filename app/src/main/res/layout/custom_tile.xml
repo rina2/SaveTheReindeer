@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/holderLinear"
+<FrameLayout
+    android:id="@+id/holderFrame"
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,4 +12,10 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:layout_height="match_parent" />
-</LinearLayout>
+    <ImageView
+        android:id="@+id/ivEffect"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"/>
+</FrameLayout>

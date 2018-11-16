@@ -12,6 +12,10 @@ public class Position {
         return new Position(num/size, num%size);
     }
 
+    public static boolean isValidPosition(int posX, int posY, int sizeOfMap){
+        if(posX >= 0 && posX < sizeOfMap && posY >= 0 && posY <sizeOfMap) return true;
+        return false;
+    }
     public int getX(){ return pointX;}
     public int getY(){ return pointY;}
 

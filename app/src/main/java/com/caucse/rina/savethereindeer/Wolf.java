@@ -1,29 +1,38 @@
 package com.caucse.rina.savethereindeer;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 
 public class Wolf extends Model {
     final int NUM_TRACE = 3;
-    private boolean isCaptured;
+    private int status;
     private boolean isSlow;
     private ArrayList<Position> trace;
 
     Wolf(int x, int y){
         isSlow = false;
         position = new Position(x, y);
-        isCaptured = false;
+        status = NONE;
         trace = new ArrayList<Position>(NUM_TRACE);
     }
-    @Override
-    void draw() {
-        if(isCaptured){
-            Log.d("WOLF_POSITION","("+position.getX()+", "+position.getY()+") : CAPTURED WOLF");
-        }else{
-            Log.d("WOLF_POSITION","("+position.getX()+", "+position.getY()+")");
-        }
 
+    public void setStatus(int status){
+        this.status = status;
+    }
+
+    @Override
+    void draw(final ImageButton imageButton, final ImageView imageView) {
+        Context context = imageButton.getContext();
+        if(status == ISCAPTRUED){
+            imageButton.setImageDrawable(context.getResources().getDrawable(R.drawable.wolf));
+            imageButton.setPadding(3, 3, 3, 3);
+        }else if(status == SELECTED){
+            imageButton.setBackground(context.getResources().getDrawable(R.color.brown));
+        }
     }
 
     @Override

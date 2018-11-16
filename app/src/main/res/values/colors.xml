@@ -8,5 +8,7 @@
     <color name="darkgreen">#409B66</color>
     <color name="white">#FFFFFF</color>
     <color name="brown">#493433</color>
-    <color name="tile">#BFE3A0</color>
+    <color name="tile">#E8CD72</color>
+    <color name="opentile">#FBECBA</color>
+    <color name="warning">#D23F3F</color>
 </resources>

@@ -2,20 +2,19 @@ package com.caucse.rina.savethereindeer;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.GridLayout;
-
+import android.widget.Toast;
 import java.util.ArrayList;
-
 import java.util.Random;
+
 
 public class Controller {
 
     //when open the tile, represent the status of tile.
-    private final static int GAME_OVER = 100;
-    private final static int GAME_WIN = 101;
-    final static int NONE = 0;
-    final static int IS_CAPTURED = 1;
-    final static int IS_TRACE = 2;
+    private final static int GAME_OVER = 12;
+    private final static int GAME_WIN = 14;
+    public final static int NONE = 0;
+    public final static int IS_CAPTURED = 1;
+    public final static int IS_TRACE = 2;
 
 
     private int[] map;
@@ -27,17 +26,18 @@ public class Controller {
     private Stage stage;
     private Context context;
     private User user = User.INSTANCE;
+    private ArrayList<Model> grid;
 
 
-    Controller(Stage stage,Context context) {
+    Controller(Stage stage, Context context) {
         remainTurn = stage.getTotalTurnNum();
         this.context = context;
         isGameWin = false;
         isGameOver = false;
         isItemSearchUsed = false;
-        view = new View(stage,context);
         this.stage = stage;
         map = stage.getIntegerArray();
+        grid = new ArrayList<>();
     }
 
     /********************Start Game *****************************/
@@ -45,6 +45,16 @@ public class Controller {
     public void initMap(GridAdapter.ItemListener itemListener) {
         initWolfPosition(); //set the position of wolf
         Distance distance = findNearestDeer();
+
+        for(int i = 0; i<stage.getSizeOfMap()* stage.getSizeOfMap(); i++){
+            grid.add(new Grass(Position.getPositionFromGrid(i,stage.getSizeOfMap())));
+        }
+        for(int i = 0; i<stage.getModel().size();i++){
+            int pos = stage.getModel().get(i).getPosition().getX() * stage.getSizeOfMap() + stage.getModel().get(i).getPosition().getY();
+            grid.remove(pos);
+            grid.add(pos, stage.getModel().get(i));
+        }
+        view = new View(stage, context,grid);
         view.setOnMap(itemListener);
         view.showNearestDeer(distance.getReindeer());
     }
@@ -87,6 +97,24 @@ public class Controller {
         return distance;
     }
 
+    private void checkGameStatus() {
+        int numOfDeer = 0;
+        for (int i = 0; i < stage.getModel().size(); i++) {
+            Model deer = stage.getModel().get(i);
+            if (deer instanceof Reindeer) {
+                numOfDeer++;
+                for (int j = 0; j < stage.getModel().size(); j++) {
+                    Model wolf = stage.getModel().get(j);
+                    if (wolf instanceof Wolf) {
+                        if (deer.getPosition().isSamePosition(wolf.getPosition()))
+                            isGameOver = true;
+                    }
+                }
+            }
+        }
+        if (numOfDeer == 0) isGameWin = true;
+    }
+
     //return chainPath, which store the parent position of each position.
     private ArrayList<ChainPath> setDistanceOnMap(int size, int[][] map, int posX, int posY) {
         ArrayList<Position> openList = new ArrayList<>();
@@ -103,7 +131,7 @@ public class Controller {
             if (model instanceof Tree || model instanceof Santa)
                 map[model.getPosition().getX()][model.getPosition().getY()] = -1;
         }
-        chainPaths.add(new ChainPath(new Position(posX,posY),null));
+        chainPaths.add(new ChainPath(new Position(posX, posY), null));
         openList.add(new Position(posX, posY));
         map[posX][posY] = 0;
 
@@ -159,7 +187,7 @@ public class Controller {
         while (true) {
             pos = findParentPosition(chainPaths, pos);
             if (pos == null) break;
-            shortestPath.add(0,pos);
+            shortestPath.add(0, pos);
         }
         return shortestPath;
 
@@ -178,58 +206,124 @@ public class Controller {
     // save the status and show
     public boolean checkTile(int pos) {
         Position position = Position.getPositionFromGrid(pos, stage.getSizeOfMap());
-        Log.d("CHECK_LOG_POSITION","("+position.getX()+", "+ position.getY()+") IS CHEKCED!");
-        boolean is_trace = false;
-
-        for (int idx = 0; idx < stage.getModel().size(); idx++) {
-            Model model = stage.getModel().get(idx);
-
-            if (model instanceof Wolf) {
-                if (position.isSamePosition(model.getPosition())) {
-                    view.checkTile(position, IS_CAPTURED);
-                    isGameWin = true;
-                    return true;
-                } else if (((Wolf) model).isMatchWithTrace(position)) {
-                    is_trace = true;
+        if(grid.get(pos) instanceof Wolf){
+            Toast.makeText(context, "There is a wolf", Toast.LENGTH_SHORT).show();
+            ((Wolf)grid.get(pos)).setStatus(Model.ISCAPTRUED);
+            view.updateTile(pos);
+            isGameWin = true;
+            return false;
+        }else{
+            for(int idx = 0 ; idx <stage.getModel().size(); idx++){
+                Model model = stage.getModel().get(idx);
+                if (model instanceof Wolf) {
+                    if(((Wolf) model).isMatchWithTrace(position)){
+                        Toast.makeText(context, "There is a trace", Toast.LENGTH_SHORT).show();
+                        ((Grass)grid.get(pos)).setStatus(Model.ISTRACE);
+                        view.updateTile(pos);
+                        //moveWolf();
+                        return true;
+                    }
                 }
-            } else if (model.getPosition().isSamePosition(position)) {
-                return false;//cannot open this tile, because already be opened.
             }
         }
-        if (is_trace) {
-            view.checkTile(position, IS_TRACE);
-        } else {
-            view.checkTile(position, NONE);
-        }
+        Toast.makeText(context, "There is Nothing", Toast.LENGTH_SHORT).show();
+        ((Grass)grid.get(pos)).setStatus(Model.Nothing);
+        view.updateTile(pos);
+        return true;
+        //moveWolf();
 
+        /*
+        is_trace = false;
+        view.updateMap();
         if (!isItemSearchUsed) {
             moveWolf();
             remainTurn--;
         } else {
             isItemSearchUsed = false;
-        }
-        return true;
+        }*/
     }
 
 
     //if return value is false, user input wrong movement position.
     public boolean moveDeer(int fPos, int tPos) {
+        Model deer = grid.get(fPos);
+        deer.move(Position.getPositionFromGrid(tPos,stage.getSizeOfMap()));
 
-        Position fromPos = Position.getPositionFromGrid(fPos, stage.getSizeOfMap());
-        Position toPos = Position.getPositionFromGrid(tPos, stage.getSizeOfMap());
-        for (int i = 0; i < stage.getModel().size(); i++) {
-            Model curModel = stage.getModel().get(i);
+        if(grid.get(tPos) instanceof Wolf){
+            stage.getModel().remove(deer);
+            grid.remove(fPos);
+            grid.add(fPos, new Grass(fPos,stage.getSizeOfMap()));
+            isGameOver = true;
+        }else if(grid.get(tPos) instanceof Santa){
+            stage.getModel().remove(deer);
+            grid.remove(fPos);
+            grid.add(fPos, new Grass(fPos,stage.getSizeOfMap()));
+            Santa santa = ((Santa) grid.get(tPos));
+            santa.decreaseCapacity();
 
-            if (!(curModel instanceof Wolf) && !(curModel instanceof Santa) && curModel.position.isSamePosition(toPos))
-                return false;
-            if (curModel.position.isSamePosition(fromPos) && curModel instanceof Reindeer) {
-                curModel.move(toPos);
-                remainTurn--;
-                moveWolf();
-                return true;
+            if(santa.getCapacity() == 0){
+                stage.getModel().remove(santa);
+                grid.remove(tPos);
+                grid.add(tPos,new Grass(tPos, stage.getSizeOfMap()));
+            }
+        }else{
+            grid.remove(fPos);
+            grid.add(fPos, new Grass(fPos,stage.getSizeOfMap()));
+            grid.remove(tPos);
+            grid.add(tPos,deer);
+        }
+        for(int i = 0; i<grid.size();i++){
+            if(grid.get(i).getStatus() == Model.SELECTED){
+                grid.get(i).setStatus(Model.NONE);
+                view.updateTile(i);
             }
         }
-        return false;
+        view.updateTile(tPos);
+        view.updateTile(fPos);
+    return true;
+    }
+
+
+    public ArrayList<Model> getGrid(){
+        return this.grid;
+    }
+
+    public void setStatusOfAroundTile(int pos) {
+        int temp;
+        if (Position.isValidPosition((int)(pos/stage.getSizeOfMap()), pos%stage.getSizeOfMap()+1, stage.getSizeOfMap())) {
+            temp = pos+1;
+            Model curModel = grid.get(temp);
+            if (!(curModel instanceof Tree) && !(curModel instanceof Reindeer)) {
+                curModel.setStatus(Model.SELECTED);
+                view.updateTile(temp);
+            }
+
+        }
+
+        if (Position.isValidPosition((int)(pos/stage.getSizeOfMap()), pos%stage.getSizeOfMap()-1, stage.getSizeOfMap())) {
+            temp = pos - 1;
+            Model curModel = grid.get(temp);
+            if (!(curModel instanceof Tree) && !(curModel instanceof Reindeer)) {
+                curModel.setStatus(Model.SELECTED);
+                view.updateTile(temp);
+            }
+        }
+        if (Position.isValidPosition(pos/stage.getSizeOfMap()+1, (int)(pos%stage.getSizeOfMap()),stage.getSizeOfMap())) {
+            temp = pos + stage.getSizeOfMap();
+            Model curModel = grid.get(temp);
+            if (!(curModel instanceof Tree) && !(curModel instanceof Reindeer)) {
+                curModel.setStatus(Model.SELECTED);
+                view.updateTile(temp);
+            }
+        }
+        if (Position.isValidPosition(pos/stage.getSizeOfMap()-1, (int)(pos%stage.getSizeOfMap()), stage.getSizeOfMap())) {
+            temp = pos - stage.getSizeOfMap();
+            Model curModel = grid.get(temp);
+            if (!(curModel instanceof Tree) && !(curModel instanceof Reindeer)) {
+                curModel.setStatus(Model.SELECTED);
+                view.updateTile(temp);
+            }
+        }
     }
 
     /***********************************Item use **************************************/
@@ -248,40 +342,13 @@ public class Controller {
 
     //if success, return true else return false
     public boolean useItemSlow() {
-        if(stage.getSpeedOfWolf() > 1) return false;
+        if (stage.getSpeedOfWolf() > 1) return false;
 
         user.decreaseItemSlow();
         stage.decreaseSpeedOfWolf();
         return true;
     }
 
-
-    public void setDeerMovementTile(int pos, int movedeer){
-
-        int temp = pos;
-        temp = pos+1;
-        if(temp <getSizeOfMap()*getSizeOfMap()){
-            if(map[temp] != Stage.TREE && map[temp] != Stage.REINDEER)
-                map[temp] = movedeer;
-        }
-        temp = pos-1;
-        if(temp >0){
-            if(map[temp] != Stage.TREE && map[temp] != Stage.REINDEER)
-                map[temp] = movedeer;
-        }
-        temp = pos + stage.getSizeOfMap();
-        if(temp <getSizeOfMap()*getSizeOfMap()){
-            if(map[temp] != Stage.TREE && map[temp] != Stage.REINDEER)
-                map[temp] = movedeer;
-        }
-
-        temp = pos - stage.getSizeOfMap();
-        if(temp >0){
-            if(map[temp] != Stage.TREE && map[temp] != Stage.REINDEER)
-                map[temp] = movedeer;
-        }
-        view.updateMap(map);
-    }
 
     public void useItemSearch(Position p) {
         user.decreaseItemSearch();
@@ -294,33 +361,19 @@ public class Controller {
     //check if Game is over/win, and draw in the grid
     public int stateUpdate() {
         int numOfDeer = 0;
-        if (isGameOver || remainTurn == 0) {
-            view.updateMap(map);
-            return GAME_OVER;
-        } else if (isGameWin) {
-            view.updateMap(map);
-            return GAME_WIN;
-        }
-
         //check if sheep meet wolf of santa.
-
         for (int deer = 0; deer < stage.getModel().size(); deer++) {
-
             Model model = stage.getModel().get(deer);
-
             if (model instanceof Reindeer) {
                 numOfDeer++;
-
                 for (int idx = 0; idx < stage.getModel().size(); idx++) {
-
                     Model second = stage.getModel().get(idx);
                     if (model == second) continue;
                     else if (second instanceof Wolf && model.getPosition().isSamePosition(second.getPosition())) {
                         stage.getModel().remove(deer);
-                        numOfDeer--;
-                        view.updateMap(map);
+                        view.updateMap();
                         return GAME_OVER; //Captured! deer dead..
-                    }else if (second instanceof Santa && model.getPosition().isSamePosition(second.getPosition())) {
+                    } else if (second instanceof Santa && model.getPosition().isSamePosition(second.getPosition())) {
                         //if met santa, remove reindeer and reduce santa's capacity
                         ((Santa) second).decreaseCapacity();
                         stage.getModel().remove(deer);
@@ -332,9 +385,15 @@ public class Controller {
                 }
             }
         }
+
         map = stage.getIntegerArray();
-        view.updateMap(map);
-        if (numOfDeer == 0){
+        view.updateMap();
+        if (numOfDeer == 0) {
+            return GAME_WIN;
+        }
+        if (isGameOver || remainTurn == 0) {
+            return GAME_OVER;
+        } else if (isGameWin) {
             return GAME_WIN;
         }
 
@@ -343,7 +402,7 @@ public class Controller {
     }
 
 
-    public int getSizeOfMap(){
+    public int getSizeOfMap() {
         return stage.getSizeOfMap();
     }
 
@@ -362,10 +421,11 @@ public class Controller {
                 if (x < stage.getSizeOfMap() - 1) map[x + 1][y] = -1;
                 if (y > 0) map[x][y - 1] = -1;
                 if (y < stage.getSizeOfMap() - 1) map[x][y + 1] = -1;
-                if(x>0 && y >0) map[x-1][y-1] = -1;
-                if(x< stage.getSizeOfMap()-1 && y>0 ) map[x+1][y-1] = -1;
-                if(x>0 && y < stage.getSizeOfMap()-1) map[x-1][y+1] = -1;
-                if(x< stage.getSizeOfMap()-1 && y< stage.getSizeOfMap()-1) map[x+1][y+1] = -1;
+                if (x > 0 && y > 0) map[x - 1][y - 1] = -1;
+                if (x < stage.getSizeOfMap() - 1 && y > 0) map[x + 1][y - 1] = -1;
+                if (x > 0 && y < stage.getSizeOfMap() - 1) map[x - 1][y + 1] = -1;
+                if (x < stage.getSizeOfMap() - 1 && y < stage.getSizeOfMap() - 1)
+                    map[x + 1][y + 1] = -1;
             }
         }
         //for every wolf, make new Wolf instance and set position
@@ -379,7 +439,8 @@ public class Controller {
                     Wolf curWolf = new Wolf(ranX, ranY);
                     stage.getModel().add(curWolf);
                     map[ranX][ranY] = -1;
-                    Log.d("CHECK_POSITION_WOLF", "POSITION COMPLETE : ("+curWolf.getPosition().getX()+","+curWolf.getPosition().getY()+")");
+                    Toast.makeText(context.getApplicationContext(), "Wolf setting complete. (" + curWolf.getPosition().getX() + "," + curWolf.getPosition().getY() + ")", Toast.LENGTH_SHORT).show();
+                    Log.d("CHECK_POSITION_WOLF", "POSITION COMPLETE : (" + curWolf.getPosition().getX() + "," + curWolf.getPosition().getY() + ")");
                     break;
                 }
                 continue;
@@ -388,16 +449,16 @@ public class Controller {
         updateMap();
     }
 
-    public int[] getMap(){
+    public int[] getMap() {
         return map;
     }
 
-    private void updateMap(){
+    private void updateMap() {
         map = stage.getIntegerArray();
     }
 
 
-    private void moveWolf() {
+    public void moveWolf() {
         Distance distance = findNearestDeer();
         Wolf wolf = distance.getWolf();
 
@@ -406,11 +467,26 @@ public class Controller {
                 distance.getWolf().getPosition().getX(), distance.getWolf().getPosition().getY());
         ArrayList<Position> shortestPath = findShortestPath(chainPaths, distance);
 
-        for(int i = 0;i<stage.getSpeedOfWolf(); i++){
-            if(i+1>= shortestPath.size()) break;
-            distance.getWolf().move(shortestPath.get(i+1));
+        for (int i = 0; i < stage.getSpeedOfWolf(); i++) {
+            if (i + 1 >= shortestPath.size()) break;
+            int pos = wolf.getPosition().getX()* stage.getSizeOfMap() + wolf.getPosition().getY();
+            grid.remove(pos);
+            grid.add(pos, new Grass(Position.getPositionFromGrid(pos,stage.getSizeOfMap())));
+            view.updateTile(pos);
+            int toPos = shortestPath.get(i + 1).getX() * stage.getSizeOfMap() + shortestPath.get(i + 1).getY();
+            wolf.move(shortestPath.get(i + 1));
+            if(grid.get(toPos) instanceof  Reindeer) {
+                isGameOver = true;
+                distance.getWolf().setStatus(Model.ISCAPTRUED);
+            }
+            grid.remove(toPos);
+            grid.add(toPos,wolf);
+            view.updateTile(toPos);
+
         }
-        
+        Toast.makeText(context.getApplicationContext(), "Wolf moved : (" + distance.getWolf().getPosition().getX() + "," + distance.getWolf().getPosition().getY() + ")", Toast.LENGTH_SHORT).show();
+        checkGameStatus();
+
     }
 
 
@@ -455,7 +531,6 @@ public class Controller {
         }
 
     }
-
 
 
 }
