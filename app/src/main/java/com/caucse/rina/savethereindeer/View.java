@@ -40,6 +40,10 @@ public class View  {
     }
 
     public void showNearestDeer(Reindeer deer){
+        if(deer == null){
+            Toast.makeText(context.getApplicationContext(), "error !!! ", Toast.LENGTH_SHORT).show();
+            return;
+        }
         //Toast.makeText(context.getApplicationContext(),"Game Start! nearest deer : ("+deer.getPosition().getX()+","+deer.getPosition().getY()+")",Toast.LENGTH_SHORT).show();
         int position = deer.getPosition().getX()*stage.getSizeOfMap()+deer.getPosition().getY();
         //todo : notify who is the nearest deer

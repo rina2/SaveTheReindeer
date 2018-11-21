@@ -80,6 +80,9 @@ public class DBController {
         ArrayList<Model> model;
         DBStage curStage = realm.where(DBStage.class).equalTo("stageNumber", stageNum).findFirst();
         int santaCapacity = (int) (curStage.getNumOfReindeer() / 2);
+        if(santaCapacity == 0){
+            santaCapacity = 1;
+        }
         int deerNum = 0;
         ArrayList<Model> modelList = new ArrayList<>();
         RealmResults<DBModel> dbModel = realm.where(DBModel.class).equalTo("stageNum", stageNum).findAll();

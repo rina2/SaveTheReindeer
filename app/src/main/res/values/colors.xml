@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="background">#F7E0CE</color>
+    <color name="black">#000000</color>
     <color name="transparent">#00ff0000</color>
     <color name="darkgreen">#409B66</color>
     <color name="white">#FFFFFF</color>
@@ -11,5 +12,7 @@
     <color name="tile">#E8CD72</color>
     <color name="opentile">#FBECBA</color>
     <color name="warning">#D23F3F</color>
-    <color name="sample">#FE7575</color>
+    <color name="itemcolor">#705C5B</color>
+    <color name="santaColor">#C7323C</color>
+    <color name="lose_game_color">#006875</color>
 </resources>

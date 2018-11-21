@@ -1,17 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Clear!"
+        android:fontFamily="@font/myfont"
+        android:textSize="40dp"
+        android:textColor="@color/black"
+        android:gravity="center"/>
 
-    <Button
-        android:id="@+id/btnToListActivity"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="목록으로"/>
-    <Button
-        android:id="@+id/btnNextStage"
-        android:layout_width="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/win_game"/>
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="다음스테이지"/>
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnToListActivity"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_margin="2dp"
+            android:text="MENU"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            android:layout_height="wrap_content"
+            android:background="@color/darkgreen"/>
+        <Button
+            android:id="@+id/btnNextStage"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_margin="2dp"
+            android:text="Next stage"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            android:layout_height="wrap_content"
+            android:background="@color/darkgreen"/>
+    </LinearLayout>
 </LinearLayout>

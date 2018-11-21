@@ -54,6 +54,10 @@ public class CustomDialog {
     private void setGameStartDialog(final Dialog dialog) {
         final Button btnStart = dialog.findViewById(R.id.btnGameStart);
         final TextView tvStageNumber = dialog.findViewById(R.id.tvStageNumber);
+        final TextView tvNumOfDeer = dialog.findViewById(R.id.tvNumOfDeer);
+        final TextView tvNumOfWolf=  dialog.findViewById(R.id.tvNumOfWolf);
+        tvNumOfDeer.setText(""+stage.getNumOfReindeer());
+        tvNumOfWolf.setText(""+stage.getNumOfWolf());
         tvStageNumber.setText("STAGE " + stage.getStageNumber());
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override

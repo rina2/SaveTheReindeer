@@ -13,9 +13,64 @@
         android:id="@+id/linLayout"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:orientation="vertical">
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_marginStart="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:background="@drawable/browncircle"
+                android:layout_margin="10dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter" />
+            <TextView
+                android:id="@+id/tvRemainTurn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:fontFamily="@font/myfont"
+                android:layout_gravity="center"
+                android:text="32"
+                android:textSize="40dp"
+
+                android:textColor="@color/white"/>
+        </FrameLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="40dp"
+
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="60dp"
+                android:src="@drawable/speed_wolf"/>
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="60dp"
+                android:src="@drawable/speed_wolf_empty"/>
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="60dp"
+                android:src="@drawable/speed_wolf_empty"/>
+
+        </LinearLayout>
+
 
     </LinearLayout>
+
 
     <android.support.v7.widget.RecyclerView
         android:layout_marginStart="10dp"
@@ -25,5 +80,113 @@
         android:layout_height="wrap_content"
         android:overScrollMode="never"
         ></android.support.v7.widget.RecyclerView>
+
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal">
+
+       <FrameLayout
+           android:layout_margin="10dp"
+           android:layout_width="0dp"
+           android:layout_weight="1"
+           android:layout_height="wrap_content">
+
+           <ImageView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_gravity="center"
+               android:src="@drawable/item_box"
+               android:backgroundTint="@color/brown"/>
+           <ImageView
+               android:id="@+id/ivItemDisguise"
+               android:layout_marginStart="10dp"
+               android:layout_width="60dp"
+               android:layout_height="60dp"
+               android:layout_gravity="left|center_vertical"
+               android:src="@drawable/item_disguise"
+                />
+           <TextView
+               android:id="@+id/tvItemDisguise"
+               android:layout_gravity="right|center_vertical"
+               android:gravity="right"
+               android:layout_marginEnd="10dp"
+               android:layout_width="60dp"
+               android:layout_height="60dp"
+               android:text="12"
+               android:textColor="@color/white"
+               android:textSize="40dp"
+               />
+
+       </FrameLayout>
+
+       <FrameLayout
+           android:layout_margin="10dp"
+           android:layout_width="0dp"
+           android:layout_weight="1"
+           android:layout_height="wrap_content">
+
+           <ImageView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_gravity="center"
+               android:src="@drawable/item_box"
+               android:backgroundTint="@color/brown"/>
+           <ImageView
+               android:id="@+id/ivItemSearch"
+               android:layout_marginStart="10dp"
+               android:layout_width="60dp"
+               android:layout_height="60dp"
+               android:layout_gravity="left|center_vertical"
+               android:src="@drawable/item_search"
+               />
+           <TextView
+               android:id="@+id/tvItemSearch"
+               android:layout_gravity="right|center_vertical"
+               android:gravity="right"
+               android:layout_marginEnd="10dp"
+               android:layout_width="60dp"
+               android:layout_height="60dp"
+               android:text="12"
+               android:textColor="@color/white"
+               android:textSize="40dp"
+               />
+
+       </FrameLayout>
+
+       <FrameLayout
+           android:layout_margin="10dp"
+           android:layout_width="0dp"
+           android:layout_weight="1"
+           android:layout_height="wrap_content">
+
+           <ImageView
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_gravity="center"
+               android:src="@drawable/item_box"
+               android:backgroundTint="@color/brown"/>
+           <ImageView
+               android:id="@+id/ivItemSlow"
+               android:layout_marginStart="10dp"
+               android:layout_width="60dp"
+               android:layout_height="60dp"
+               android:layout_gravity="left|center_vertical"
+               android:src="@drawable/item_slow"
+               />
+           <TextView
+               android:id="@+id/tvItemSlow"
+               android:layout_gravity="right|center_vertical"
+               android:gravity="right"
+               android:layout_marginEnd="10dp"
+               android:layout_width="60dp"
+               android:layout_height="60dp"
+               android:text="12"
+               android:textColor="@color/white"
+               android:textSize="40dp"
+               />
+
+       </FrameLayout>
+   </LinearLayout>.
 
 </LinearLayout>

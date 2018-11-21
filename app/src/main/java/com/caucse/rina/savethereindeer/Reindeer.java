@@ -31,6 +31,7 @@ public class Reindeer extends Model {
         imageButton.setPadding(3, 3, 3, 3);
         if (status == WARNING) {
             imageButton.setBackground(context.getResources().getDrawable(R.color.warning));
+            status = NONE;
         }
         if(isScared){
             imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.deer_scared));

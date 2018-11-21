@@ -1,16 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lose"
+        android:fontFamily="@font/myfont"
+        android:textSize="40dp"
+        android:textColor="@color/black"
+        android:gravity="center"/>
 
-    <Button
-        android:id="@+id/btnTryAgain"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Try again"/>
-    <Button
-        android:id="@+id/btnToListActivity"
-        android:layout_width="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_margin="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/lose_game"/>
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="go to menu"/>
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnToListActivity"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_margin="2dp"
+            android:text="MENU"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            android:layout_height="wrap_content"
+            android:background="@color/lose_game_color"/>
+        <Button
+            android:id="@+id/btnTryAgain"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_margin="2dp"
+            android:text="TRY AGAIN"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            android:layout_height="wrap_content"
+            android:background="@color/lose_game_color"/>
+    </LinearLayout>
 </LinearLayout>

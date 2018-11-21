@@ -11,47 +11,27 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class PlayActivity extends AppCompatActivity implements GridAdapter.ItemListener {
 
-    private GridLayout gridLayout;
     public static DBController dbController;
-    private View view;
     public static boolean isSettingFinished = false;
     private Controller controller;
-    private boolean ISGAMEFINISH = false;
-    private long mLastClickTime = 0;
-
+    private static TextView tvRemainTurn;
     private int actionMode;
     private int selectedPosition;
-
-
     private Stage curStage;
-    private final static int GAME_OVER = 12;
-    private final static int GAME_WIN = 14;
-    private final int NONE = 2221;
     private final int SELECTION = 2222;
-    private final int MOVEDEERTOSANTA = Stage.MOVEDEERTOSANTA;
     private final int MOVEDEER = Stage.MOVEDEER;
-    private final int REINDEER = Stage.REINDEER;
-    private final int SANTA = Stage.SANTA;
-    private final int TREE = Stage.TREE;
-    private final int WOLF = Stage.WOLF;
-    private final int GRASS = Stage.GRASS;
-
-    LinearLayout linearLayout;
-    private Context context;
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
+        tvRemainTurn = findViewById(R.id.tvRemainTurn);
         /********************* Get Stage Information *********************/
 
         dbController = new DBController(this);
@@ -64,6 +44,7 @@ public class PlayActivity extends AppCompatActivity implements GridAdapter.ItemL
         }
         curStage = dbController.getStageInformation(stage_num);
         Log.d("CHECK_STAGE_INFORMATION", curStage.getSizeOfMap() + "");
+        tvRemainTurn.setText(""+ curStage.getTotalTurnNum());
 
         /**********************Set Map on the Activity **********************/
 
@@ -104,10 +85,13 @@ public class PlayActivity extends AppCompatActivity implements GridAdapter.ItemL
         }
     }
 
-
     @Override
     public void onBackPressed() {
         CustomDialog dialog = new CustomDialog(this,curStage);
         dialog.CallFunction(CustomDialog.DIALOG_GAME_EXIT);
+    }
+
+    public static void setTurnOnTextView(int total){
+        tvRemainTurn.setText(""+total);
     }
 }

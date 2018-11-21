@@ -319,7 +319,11 @@ public class Controller {
             grid.remove(fPos);
             grid.add(fPos, new Grass(fPos, stage.getSizeOfMap()));
             grid.get(tPos).setStatus(Model.ISCAPTRUED);
+            view.updateTile(tPos);
+            view.updateTile(fPos);
             isGameOver = true;
+            stateUpdate();
+            return true;
         } else if (grid.get(tPos) instanceof Santa) {
             stage.getModel().remove(deer);
             grid.remove(fPos);
@@ -343,7 +347,6 @@ public class Controller {
         moveWolf();
         return true;
     }
-
 
     public void moveWolf() {
         Distance distance = findNearestDeer();
@@ -387,14 +390,7 @@ public class Controller {
 
     /***********************************After action : State Update *******************/
 
-    //todo
     private int stateUpdate() {
-        remainTurn--;
-        if (isGameOver || remainTurn <= 0) {
-            CustomDialog dialog = new CustomDialog(context, stage);
-            dialog.CallFunction(CustomDialog.DIALOG_GAME_LOSE);
-            return GAME_OVER;
-        }
         if (isGameWin) {
             if (stage.getStageNumber() == User.INSTANCE.getClearStage() + 1) {
 
@@ -402,9 +398,18 @@ public class Controller {
                 PlayActivity.dbController.updateUserInformation();
             }
             CustomDialog dialog = new CustomDialog(context, stage);
-            dialog.CallFunction(CustomDialog.DIALOG_GAME_WIN); //todo
+            dialog.CallFunction(CustomDialog.DIALOG_GAME_WIN);
             return GAME_WIN;
         }
+
+        remainTurn--;
+        PlayActivity.setTurnOnTextView(remainTurn);
+        if (isGameOver || remainTurn <= 0) {
+            CustomDialog dialog = new CustomDialog(context, stage);
+            dialog.CallFunction(CustomDialog.DIALOG_GAME_LOSE);
+            return GAME_OVER;
+        }
+
 
         int remainDeer = 0;
         for (int i = 0; i < stage.getModel().size(); i++) {
@@ -415,6 +420,11 @@ public class Controller {
             }
         }
         if (remainDeer == 0) {
+            if (stage.getStageNumber() == User.INSTANCE.getClearStage() + 1) {
+
+                User.INSTANCE.increaseStageClear();
+                PlayActivity.dbController.updateUserInformation();
+            }
             CustomDialog dialog = new CustomDialog(context, stage);
             dialog.CallFunction(CustomDialog.DIALOG_GAME_WIN);
             return GAME_WIN;

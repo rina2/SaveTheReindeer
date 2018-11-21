@@ -12,6 +12,7 @@ import android.widget.GridView;
 public class StageListActivity extends AppCompatActivity {
 
 
+    private final int MAX_STAGE = 8;
     private User user = User.INSTANCE;
     private GridLayout grid;
     private final int START_GAME_REQUEST = 55;
@@ -28,6 +29,7 @@ public class StageListActivity extends AppCompatActivity {
         /************** Setting color on the list ***************/
         int clearStage = user.getClearStage();
         for(int i = 0; i<clearStage+1; i++){
+            if(i >= MAX_STAGE) return;
             Button btn = (Button)grid.getChildAt(i);
             btn.setBackground(this.getResources().getDrawable(R.drawable.clearsquare));
         }
