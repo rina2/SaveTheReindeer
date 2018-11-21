@@ -15,7 +15,7 @@ public class View  {
     final int NONE = Controller.NONE;
 
     private RecyclerView.LayoutManager layoutManager;
-    private RecyclerView recyclerView;
+    public static RecyclerView recyclerView;
     private GridAdapter adapter;
     private int[] map;
     private ArrayList<Model> grid;
@@ -40,7 +40,7 @@ public class View  {
     }
 
     public void showNearestDeer(Reindeer deer){
-        Toast.makeText(context.getApplicationContext(),"Game Start! nearest deer : ("+deer.getPosition().getX()+","+deer.getPosition().getY()+")",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context.getApplicationContext(),"Game Start! nearest deer : ("+deer.getPosition().getX()+","+deer.getPosition().getY()+")",Toast.LENGTH_SHORT).show();
         int position = deer.getPosition().getX()*stage.getSizeOfMap()+deer.getPosition().getY();
         //todo : notify who is the nearest deer
 

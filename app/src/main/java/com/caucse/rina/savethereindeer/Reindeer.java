@@ -24,17 +24,18 @@ public class Reindeer extends Model {
         this.number = DeerNumber;
     }
 
-    //todo
     @Override
     void draw(final ImageButton imageButton, final ImageView imageView) {
         final Context context = imageButton.getContext();
-        android.os.Handler handler = new android.os.Handler();
         imageButton.setImageDrawable(context.getResources().getDrawable(R.drawable.reindeer));
         imageButton.setPadding(3, 3, 3, 3);
         if (status == WARNING) {
             imageButton.setBackground(context.getResources().getDrawable(R.color.warning));
         }
-        imageButton.setImageDrawable(context.getResources().getDrawable(R.drawable.reindeer));
+        if(isScared){
+            imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.deer_scared));
+            isScared = false;
+        }
     }
 
 
@@ -46,5 +47,9 @@ public class Reindeer extends Model {
 
     public void setDisguise(boolean disguise) {
         isDisguise = disguise;
+    }
+
+    public void setIsScrared(boolean flag){
+        this.isScared = flag;
     }
 }

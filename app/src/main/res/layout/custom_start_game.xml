@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_gravity="center"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="400dp"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/custom_game_start_background"
+        android:orientation="vertical">
+
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvStageNumber"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/custom_game_start_title"
+        android:backgroundTint="@color/darkgreen"
+        android:layout_marginStart="70dp"
+        android:layout_marginEnd="70dp"
+        android:textSize="40dp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:fontFamily="@font/myfont"
+        />
+
+    <Button
+        android:id="@+id/btnGameStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/custom_button_background"
+        android:text="GAME START!"/>
+</FrameLayout>

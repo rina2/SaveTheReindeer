@@ -44,7 +44,8 @@ public class StageListActivity extends AppCompatActivity {
                     if(stagenum <= user.getClearStage()+1){
                         Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
                         intent.putExtra("stageNumber",stagenum);
-                        startActivityForResult(intent,START_GAME_REQUEST);
+                        startActivity(intent);
+                        finish();
                     }
                 }
             });

@@ -24,7 +24,7 @@ abstract class Model {
         position = p;
     }
 
-    public int getStatus(){return status;}
+    public int getStatus(){ return status;}
 
     public Position getPosition(){
         return position;

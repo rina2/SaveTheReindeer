@@ -7,15 +7,18 @@
     <ImageButton
         android:id="@+id/ibTile"
         android:layout_margin="3dp"
-        android:background="@drawable/tile"
+        android:background="@drawable/custom_grid_tile"
         android:layout_width="match_parent"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:layout_height="match_parent" />
     <ImageView
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:id="@+id/ivEffect"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
-        android:adjustViewBounds="true"/>
+        android:adjustViewBounds="true"
+        />
 </FrameLayout>

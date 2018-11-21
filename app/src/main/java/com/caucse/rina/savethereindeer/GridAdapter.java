@@ -1,10 +1,6 @@
 package com.caucse.rina.savethereindeer;
 
-import android.app.Activity;
-import android.content.ClipData;
 import android.content.Context;
-import android.content.res.ObbInfo;
-import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +16,6 @@ import java.util.ArrayList;
 
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
 
-    private int[] map;
     ArrayList<Model> model;
     private Context context;
     protected static ItemListener listener;
@@ -28,15 +23,8 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
 
     public GridAdapter(Context con, ArrayList<Model> m, ItemListener itemListener) {
         this.context = con;
-        this.map = map;
         model = m;
         listener = itemListener;
-    }
-
-
-    public void update(int[] map) {
-        this.map = map;
-        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -50,7 +38,6 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
             imageView = (ImageView) view.findViewById(R.id.ivEffect);
             Layout = (FrameLayout) view.findViewById(R.id.holderFrame);
             imageButton = (ImageButton) view.findViewById(R.id.ibTile);
-            //view.setOnClickListener(this);
             imageButton.setOnClickListener(this);
             imageView.setOnClickListener(this);
         }
@@ -77,20 +64,11 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull GridAdapter.ViewHolder holder, final int position) {
-        holder.imageButton.setBackground(context.getResources().getDrawable(R.drawable.tile));
+        holder.imageButton.setBackground(context.getResources().getDrawable(R.drawable.custom_grid_tile));
         holder.imageButton.setImageDrawable(context.getResources().getDrawable(R.color.transparent));
+        holder.imageView.setImageBitmap(null);
         Model m = model.get(position);
-        if(m instanceof Wolf){
-            ((Wolf)m).draw(holder.imageButton, holder.imageView);
-        }else if(m instanceof Reindeer){
-            ((Reindeer)m).draw(holder.imageButton, holder.imageView);
-        }else if(m instanceof  Tree){
-            ((Tree)m).draw(holder.imageButton, holder.imageView);
-        }else if(m instanceof Grass){
-            ((Grass)m).draw(holder.imageButton, holder.imageView);
-        }else if(m instanceof Santa){
-            ((Santa)m).draw(holder.imageButton, holder.imageView);
-        }
+        m.draw(holder.imageButton, holder.imageView);
 
     }
 

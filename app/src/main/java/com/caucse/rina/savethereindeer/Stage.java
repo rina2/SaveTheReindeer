@@ -76,6 +76,8 @@ public class Stage{
         return speedOfWolf;
     }
 
+    public int getNumOfReindeer(){return numOfReindeer;}
+
     public int getStageNumber() {
         return stageNumber;
     }

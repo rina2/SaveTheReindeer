@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 public class Wolf extends Model {
     final int NUM_TRACE = 3;
-    private int status;
     private boolean isSlow;
     private ArrayList<Position> trace;
 
@@ -18,10 +17,6 @@ public class Wolf extends Model {
         position = new Position(x, y);
         status = NONE;
         trace = new ArrayList<Position>(NUM_TRACE);
-    }
-
-    public void setStatus(int status){
-        this.status = status;
     }
 
     @Override

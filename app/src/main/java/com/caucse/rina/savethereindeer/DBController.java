@@ -28,7 +28,7 @@ public class DBController {
     private final String SANTA = "SANTA";
     private Context context;
 
-    DBController(Context con){
+    public DBController(Context con){
         context = con;
         realm.init(context);
         realm = Realm.getDefaultInstance();
