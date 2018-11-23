@@ -88,9 +88,15 @@ public class CustomDialog {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                Intent intent = new Intent(dialog.getContext(), PlayActivity.class);
-                intent.putExtra("stageNumber", stage.getStageNumber() + 1);
-                context.startActivity(intent);
+                if(stage.getStageNumber() < StageListActivity.MAX_STAGE) {
+                    Intent intent = new Intent(dialog.getContext(), PlayActivity.class);
+                    intent.putExtra("stageNumber", stage.getStageNumber() + 1);
+                    context.startActivity(intent);
+                }else{
+                    Intent listIntent = new Intent(dialog.getContext(), StageListActivity.class);
+                    context.startActivity(listIntent);
+                }
+
                 ((Activity) context).finish();
             }
         });

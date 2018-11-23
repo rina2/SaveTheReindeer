@@ -51,16 +51,19 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/ivSpeedOne"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="60dp"
                 android:src="@drawable/speed_wolf"/>
             <ImageView
+                android:id="@+id/ivSpeedTwo"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="60dp"
                 android:src="@drawable/speed_wolf_empty"/>
             <ImageView
+                android:id="@+id/ivSpeedThree"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="60dp"

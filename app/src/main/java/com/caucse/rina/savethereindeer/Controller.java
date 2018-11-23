@@ -27,9 +27,11 @@ public class Controller {
     private Context context;
     private User user = User.INSTANCE;
     private ArrayList<Model> grid;
+    private DBController dbController;
 
-
-    Controller(Stage stage, Context context) {
+    Controller(Context context, int stage_numger) {
+        dbController = new DBController(context);
+        this.stage = dbController.getStageInformation(stage_numger);
         remainTurn = stage.getTotalTurnNum();
         this.context = context;
         isGameWin = false;
@@ -39,10 +41,11 @@ public class Controller {
         grid = new ArrayList<>();
     }
 
+    public Stage getStage(){
+        return stage;
+    }
     public ArrayList<Model> getGrid() {
-
         return this.grid;
-
     }
 
     /********************Start Game *****************************/
@@ -62,7 +65,6 @@ public class Controller {
         view = new View(stage, context, grid);
         view.setOnMap(itemListener);
         view.showNearestDeer(distance.getReindeer());
-        PlayActivity.isSettingFinished = true;
     }
 
     private void initWolfPosition() {
@@ -186,7 +188,11 @@ public class Controller {
             if (model instanceof Tree || model instanceof Santa) {
                 map[model.getPosition().getX()][model.getPosition().getY()] = -1;
             } else if (model instanceof Wolf) wolf.add((Wolf) model);
-            else if (model instanceof Reindeer) reindeer.add((Reindeer) model);
+            else if (model instanceof Reindeer) {
+                if(!((Reindeer) model).getIsDisguise()) {
+                    reindeer.add((Reindeer) model);
+                }
+            }
         }
 
         if (reindeer.isEmpty()) return null;
@@ -198,6 +204,7 @@ public class Controller {
 
             for (int deerIdx = 0; deerIdx < reindeer.size(); deerIdx++) {
                 Model deer = reindeer.get(deerIdx);
+
                 int curDistance = map[deer.getPosition().getX()][deer.getPosition().getY()];
                 if (curDistance < shortest) {
                     shortest = curDistance;
@@ -240,14 +247,14 @@ public class Controller {
     /**********************************User Action ************************************/
 
     // save the status and show
-    public boolean checkTile(int pos) {
+    public boolean checkTile(int pos, boolean isItemUsed) {
         Position position = Position.getPositionFromGrid(pos, stage.getSizeOfMap());
         if (grid.get(pos) instanceof Wolf) {
             //Toast.makeText(context, "There is a wolf", Toast.LENGTH_SHORT).show();
             ((Wolf) grid.get(pos)).setStatus(Model.ISCAPTRUED);
             view.updateTile(pos);
             isGameWin = true;
-            stateUpdate();
+            stateUpdate(isItemUsed);
             return false;
         } else {
             for (int idx = 0; idx < stage.getModel().size(); idx++) {
@@ -257,7 +264,11 @@ public class Controller {
                         // Toast.makeText(context, "There is a trace", Toast.LENGTH_SHORT).show();
                         ((Grass) grid.get(pos)).setStatus(Model.ISTRACE);
                         view.updateTile(pos);
-                        moveWolf();
+                        if (isItemUsed) {
+                            stateUpdate(true);
+                        }else{
+                            moveWolf();
+                        }
                         return true;
                     }
                 }
@@ -266,7 +277,11 @@ public class Controller {
         }
         ((Grass) grid.get(pos)).setStatus(Model.Nothing);
         view.updateTile(pos);
-        moveWolf();
+        if (isItemUsed) {
+            stateUpdate(true);
+        }else{
+            moveWolf();
+        }
         return true;
     }
 
@@ -322,7 +337,7 @@ public class Controller {
             view.updateTile(tPos);
             view.updateTile(fPos);
             isGameOver = true;
-            stateUpdate();
+            stateUpdate(false);
             return true;
         } else if (grid.get(tPos) instanceof Santa) {
             stage.getModel().remove(deer);
@@ -351,7 +366,7 @@ public class Controller {
     public void moveWolf() {
         Distance distance = findNearestDeer();
         if (distance == null) {
-            stateUpdate();
+            stateUpdate(false);
             return;
         }
         Reindeer deer = distance.getReindeer();
@@ -385,25 +400,27 @@ public class Controller {
 
         }
         Toast.makeText(context.getApplicationContext(), "Wolf moved : (" + distance.getWolf().getPosition().getX() + "," + distance.getWolf().getPosition().getY() + ")", Toast.LENGTH_SHORT).show();
-        stateUpdate();
+        stateUpdate(false);
     }
 
     /***********************************After action : State Update *******************/
 
-    private int stateUpdate() {
+    private int stateUpdate(boolean isItemUsed) {
         if (isGameWin) {
             if (stage.getStageNumber() == User.INSTANCE.getClearStage() + 1) {
 
                 User.INSTANCE.increaseStageClear();
-                PlayActivity.dbController.updateUserInformation();
+                dbController.updateUserInformation();
             }
             CustomDialog dialog = new CustomDialog(context, stage);
             dialog.CallFunction(CustomDialog.DIALOG_GAME_WIN);
             return GAME_WIN;
         }
 
-        remainTurn--;
-        PlayActivity.setTurnOnTextView(remainTurn);
+        if(!isItemUsed){
+            remainTurn--;
+            PlayActivity.setTurnOnTextView(remainTurn);
+        }
         if (isGameOver || remainTurn <= 0) {
             CustomDialog dialog = new CustomDialog(context, stage);
             dialog.CallFunction(CustomDialog.DIALOG_GAME_LOSE);
@@ -423,7 +440,7 @@ public class Controller {
             if (stage.getStageNumber() == User.INSTANCE.getClearStage() + 1) {
 
                 User.INSTANCE.increaseStageClear();
-                PlayActivity.dbController.updateUserInformation();
+                dbController.updateUserInformation();
             }
             CustomDialog dialog = new CustomDialog(context, stage);
             dialog.CallFunction(CustomDialog.DIALOG_GAME_WIN);
@@ -436,7 +453,6 @@ public class Controller {
         View.recyclerView.setEnabled(true);
         return 0;
     }
-
 
     private void checkDeerStatus(final Reindeer deer) {
         //todo : check around 8 tile & change status & update view
@@ -519,31 +535,45 @@ public class Controller {
     /***********************************Item use **************************************/
 
     //change status of reindeer and update view
-    public void useItemDisguise(Position position) {
-        for (int idx = 0; idx < stage.getModel().size(); idx++) {
-            Model model = stage.getModel().get(idx);
-
-            if (model instanceof Reindeer && model.getPosition().isSamePosition(position)) {
-                ((Reindeer) model).setDisguise(true);
-                user.decreaseItemDisguise();
-            }
+    public void useItemDisguise(int position) {
+        Model m = grid.get(position);
+        if(m instanceof Reindeer){
+            ((Reindeer) m).setDisguise(true);
+            view.updateTile(position);
         }
+        User.INSTANCE.decreaseItemDisguise();
+        dbController.updateUserInformation();
+        moveWolf();
+        view.updateTile(position);
+        View.recyclerView.setClickable(true);
+        View.recyclerView.setEnabled(true);
     }
 
     //if success, return true else return false
     public boolean useItemSlow() {
-        if (stage.getSpeedOfWolf() > 1) return false;
-
-        user.decreaseItemSlow();
-        stage.decreaseSpeedOfWolf();
-        return true;
+        if(stage.getSpeedOfWolf() > 1) {
+            stage.decreaseSpeedOfWolf();
+            User.INSTANCE.decreaseItemSlow();
+            dbController.updateUserInformation();
+            View.recyclerView.setClickable(true);
+            View.recyclerView.setEnabled(true);
+           return true;
+        }else{
+            Toast.makeText(context.getApplicationContext(),"속도를 더이상 줄일 수 없습니다.",Toast.LENGTH_SHORT).show();
+            View.recyclerView.setClickable(true);
+            View.recyclerView.setEnabled(true);
+            return false;
+        }
     }
 
 
-    public void useItemSearch(Position p) {
+    public void useItemSearch(int p) {
         user.decreaseItemSearch();
-        isItemSearchUsed = true;
-        //checkTile(p);
+        dbController.updateUserInformation();
+        checkTile(p,true);
+        View.recyclerView.setClickable(true);
+        View.recyclerView.setEnabled(true);
+
     }
 
     /******************************Inner Class *****************************/

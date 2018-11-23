@@ -12,7 +12,7 @@ import android.widget.GridView;
 public class StageListActivity extends AppCompatActivity {
 
 
-    private final int MAX_STAGE = 8;
+    public static final int MAX_STAGE = 8;
     private User user = User.INSTANCE;
     private GridLayout grid;
     private final int START_GAME_REQUEST = 55;

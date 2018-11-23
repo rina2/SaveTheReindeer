@@ -46,6 +46,8 @@ public class View  {
         }
         //Toast.makeText(context.getApplicationContext(),"Game Start! nearest deer : ("+deer.getPosition().getX()+","+deer.getPosition().getY()+")",Toast.LENGTH_SHORT).show();
         int position = deer.getPosition().getX()*stage.getSizeOfMap()+deer.getPosition().getY();
+        deer.setStatus(Model.WARNING);
+        updateTile(position);
         //todo : notify who is the nearest deer
 
     }

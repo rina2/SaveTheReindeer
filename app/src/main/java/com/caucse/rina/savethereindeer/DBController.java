@@ -41,7 +41,7 @@ public class DBController {
 
         /****************Store User Information ******************/
         DBUser user = realm.createObject(DBUser.class);
-        user.setInfo(0, 0, 0, 0, 500);
+        user.setInfo(0, 5, 5, 5, 500);
 
         /****************Store Stage Information******************/
         saveStageInfoToDB(getStringFromJSON());
@@ -54,7 +54,6 @@ public class DBController {
 
     //when open the app, get user information from database.
     public void getUserInformation() {
-
         realm.beginTransaction();
         DBUser DBUser = realm.where(DBUser.class).findFirst();
         User user = User.INSTANCE;

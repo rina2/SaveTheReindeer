@@ -27,8 +27,14 @@ public class Reindeer extends Model {
     @Override
     void draw(final ImageButton imageButton, final ImageView imageView) {
         final Context context = imageButton.getContext();
-        imageButton.setImageDrawable(context.getResources().getDrawable(R.drawable.reindeer));
         imageButton.setPadding(3, 3, 3, 3);
+        if(isDisguise){
+            imageButton.setImageDrawable(context.getResources().getDrawable(R.drawable.wolf));
+            isDisguise = false;
+        }else{
+            imageButton.setImageDrawable(context.getResources().getDrawable(R.drawable.reindeer));
+        }
+
         if (status == WARNING) {
             imageButton.setBackground(context.getResources().getDrawable(R.color.warning));
             status = NONE;
@@ -50,6 +56,9 @@ public class Reindeer extends Model {
         isDisguise = disguise;
     }
 
+    public boolean getIsDisguise(){
+        return isDisguise;
+    }
     public void setIsScrared(boolean flag){
         this.isScared = flag;
     }

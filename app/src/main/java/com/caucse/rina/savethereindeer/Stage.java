@@ -18,7 +18,6 @@ public class Stage{
     private int sizeOfMap= 0;
     private int speedOfWolf = 0;
 
-    public static final int MOVEDEERTOSANTA = 2224;
     public static final int MOVEDEER = 2223;
     public static final int REINDEER = 100;
     public static final int TREE = 101;
